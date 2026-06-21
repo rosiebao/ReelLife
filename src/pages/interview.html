@@ -289,6 +289,8 @@
     let isRecording = false;
     let startTime = null;
     let timerInterval = null;
+    let elapsedTime = 0; // Track total elapsed time in seconds
+    let isPaused = false;
 
     // Get interview mode from URL or default
     const urlParams = new URLSearchParams(window.location.search);
@@ -320,19 +322,32 @@
       isRecording = await interviewClient.toggleRecording();
 
       if (isRecording) {
-        // Start timer on first recording
+        // Start or resume timer
         if (!startTime) {
-          startTime = Date.now();
+          // First time starting - initialize timer
+          startTime = Date.now() - (elapsedTime * 1000);
           timerInterval = setInterval(updateTimer, 1000);
+        } else if (isPaused) {
+          // Resuming from pause - adjust startTime to account for elapsed time
+          startTime = Date.now() - (elapsedTime * 1000);
+          timerInterval = setInterval(updateTimer, 1000);
+          isPaused = false;
         }
 
         this.textContent = '🎤';
         this.style.background = '#EF4444'; // Red when recording
         document.querySelector('.record-hint').textContent = 'Recording... tap to pause';
       } else {
-        this.textContent = '⏸️';
+        // Paused - stop timer but keep elapsed time
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          isPaused = true;
+        }
+
+        this.textContent = '▶️';
         this.style.background = 'var(--color-navy)';
-        document.querySelector('.record-hint').textContent = 'Tap to continue';
+        document.querySelector('.record-hint').textContent = 'Paused - tap to continue';
       }
     });
 
@@ -412,9 +427,9 @@
     function updateTimer() {
       if (!startTime) return;
 
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      const minutes = Math.floor(elapsed / 60);
-      const seconds = elapsed % 60;
+      elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+      const minutes = Math.floor(elapsedTime / 60);
+      const seconds = elapsedTime % 60;
       const timerEl = document.querySelector('.timer');
       if (timerEl) {
         timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
