@@ -13,6 +13,9 @@ if [ -z "$AWS_EXECUTION_ENV" ] && [ ! -f "/var/run/secrets/eks.amazonaws.com/ser
     echo ""
 fi
 
+# Navigate to server directory
+cd src/server
+
 # Check if node_modules exists
 if [ ! -d "node_modules" ]; then
     echo "📦 Installing dependencies..."

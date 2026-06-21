@@ -69,7 +69,7 @@ nano config.json
 
 ```bash
 # Terminal 1: Start Backend
-cd /Users/rosie/Work/ReelLife/src/server
+cd /Users/rosie/Work/ReelLife
 npm install
 npm start
 
@@ -153,7 +153,7 @@ curl -X POST http://localhost:3000/api/interview/start \
 ### "Failed to start interview"
 ```bash
 # Backend not running?
-cd /Users/rosie/Work/ReelLife/src/server
+cd /Users/rosie/Work/ReelLife
 npm start
 ```
 
@@ -200,7 +200,7 @@ npm start
 
 ```bash
 # Start everything
-cd /Users/rosie/Work/ReelLife/src/server && npm start &
+cd /Users/rosie/Work/ReelLife && npm start &
 cd /Users/rosie/Work/ReelLife/src && python3 -m http.server 8000
 
 # Test API

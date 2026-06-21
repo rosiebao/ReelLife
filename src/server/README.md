@@ -56,7 +56,7 @@ Create an IAM user with these permissions:
 
 1. **Navigate to server directory:**
    ```bash
-   cd /Users/rosie/Work/ReelLife/src/server
+   cd /Users/rosie/Work/ReelLife
    ```
 
 2. **Install dependencies:**
@@ -282,7 +282,7 @@ You can use any Anthropic Claude model available in Bedrock:
 
 **Solution:**
 ```bash
-cd /Users/rosie/Work/ReelLife/src/server
+cd /Users/rosie/Work/ReelLife
 npm start
 ```
 

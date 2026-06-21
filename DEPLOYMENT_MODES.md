@@ -55,19 +55,19 @@ The ReelLife API supports two deployment modes with different authentication str
 
 **Option A: npm script**
 ```bash
-cd /Users/rosie/Work/ReelLife/src/server
+cd /Users/rosie/Work/ReelLife
 npm run dev
 ```
 
 **Option B: Bash script**
 ```bash
-cd /Users/rosie/Work/ReelLife/src/server
+cd /Users/rosie/Work/ReelLife
 ./start-dev.sh
 ```
 
 **Option C: Manual**
 ```bash
-cd /Users/rosie/Work/ReelLife/src/server
+cd /Users/rosie/Work/ReelLife
 NODE_ENV=development node server.js
 ```
 
