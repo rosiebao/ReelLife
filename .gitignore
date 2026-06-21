@@ -4,8 +4,14 @@ package-lock.json
 
 # Environment and Config
 .env
+.env.local
+.env.*.local
 config.json
+config.local.json
 .aws/
+*.token
+*.credentials
+*bearer*token*
 
 # Logs
 logs/

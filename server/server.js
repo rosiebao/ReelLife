@@ -69,8 +69,35 @@ try {
       // Works with: EC2 instance profiles, ECS task roles, Lambda execution roles
     });
   } else {
-    // Development Mode: Use credentials from config.json or environment variables
-    if (config.aws.credentials && config.aws.credentials.accessKeyId) {
+    // Development Mode: Multiple credential sources (priority order)
+
+    // 1. Check for bearer token (session token) in environment
+    if (process.env.AWS_SESSION_TOKEN || process.env.AWS_BEDROCK_TOKEN) {
+      console.log('🎫 Using AWS session token from environment variables');
+      const sessionToken = process.env.AWS_SESSION_TOKEN || process.env.AWS_BEDROCK_TOKEN;
+      bedrockClient = new BedrockRuntimeClient({
+        region: config.aws.region,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          sessionToken: sessionToken,
+        },
+      });
+    }
+    // 2. Check for bearer token in config.json
+    else if (config.aws.credentials && config.aws.credentials.sessionToken) {
+      console.log('🎫 Using AWS session token from config.json');
+      bedrockClient = new BedrockRuntimeClient({
+        region: config.aws.region,
+        credentials: {
+          accessKeyId: config.aws.credentials.accessKeyId,
+          secretAccessKey: config.aws.credentials.secretAccessKey,
+          sessionToken: config.aws.credentials.sessionToken,
+        },
+      });
+    }
+    // 3. Standard credentials from config.json
+    else if (config.aws.credentials && config.aws.credentials.accessKeyId) {
       console.log('🔑 Using credentials from config.json (development mode)');
       bedrockClient = new BedrockRuntimeClient({
         region: config.aws.region,
@@ -79,13 +106,17 @@ try {
           secretAccessKey: config.aws.credentials.secretAccessKey,
         },
       });
-    } else if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+    }
+    // 4. Standard credentials from environment variables
+    else if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
       console.log('🔑 Using credentials from environment variables');
       bedrockClient = new BedrockRuntimeClient({
         region: config.aws.region,
         credentials: fromEnv(),
       });
-    } else {
+    }
+    // 5. Default credential chain (AWS CLI, ~/.aws/credentials)
+    else {
       console.log('🔑 Using default credential chain (AWS CLI, ~/.aws/credentials)');
       bedrockClient = new BedrockRuntimeClient({
         region: config.aws.region,
