@@ -185,12 +185,12 @@
       </div>
 
       <div class="social-auth">
-        <button type="button" class="btn btn-social btn-large">
+        <button type="button" class="btn btn-social btn-large" id="appleBtn">
           <span class="social-icon">🍎</span>
           Continue with Apple
         </button>
 
-        <button type="button" class="btn btn-social btn-large">
+        <button type="button" class="btn btn-social btn-large" id="googleBtn">
           <span class="social-icon">G</span>
           Continue with Google
         </button>
@@ -205,6 +205,19 @@
   <script>
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
+      window.location.href = 'community.html';
+    });
+
+    // Social auth buttons
+    document.getElementById('appleBtn').addEventListener('click', function() {
+      // In production, this would trigger Apple OAuth flow
+      // For now, simulate successful auth
+      window.location.href = 'community.html';
+    });
+
+    document.getElementById('googleBtn').addEventListener('click', function() {
+      // In production, this would trigger Google OAuth flow
+      // For now, simulate successful auth
       window.location.href = 'community.html';
     });
   </script>

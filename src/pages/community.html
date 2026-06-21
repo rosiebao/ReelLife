@@ -271,7 +271,7 @@
     <div class="community-content">
       <h2 class="section-title">Featured Story</h2>
 
-      <div class="featured-story">
+      <div class="featured-story" data-categories="Immigration,Local History">
         <div class="featured-story-image"></div>
         <div class="featured-story-content">
           <h3 class="featured-story-title">Leaving Guangzhou at 18</h3>
@@ -300,7 +300,7 @@
       <h2 class="section-title">Recent Stories</h2>
 
       <div class="recent-stories">
-        <div class="story-card">
+        <div class="story-card" data-categories="Local History">
           <div class="story-card-image"></div>
           <div class="story-card-content">
             <h3 class="story-card-title">Working the Fields in California</h3>
@@ -316,7 +316,7 @@
           </div>
         </div>
 
-        <div class="story-card">
+        <div class="story-card" data-categories="Business">
           <div class="story-card-image"></div>
           <div class="story-card-content">
             <h3 class="story-card-title">Opening the Corner Store</h3>
@@ -332,7 +332,7 @@
           </div>
         </div>
 
-        <div class="story-card">
+        <div class="story-card" data-categories="Culture/Faith">
           <div class="story-card-image"></div>
           <div class="story-card-content">
             <h3 class="story-card-title">My Grandmother's Recipes</h3>
@@ -343,6 +343,55 @@
             <p class="story-card-meta">Chicago • 1950s-Present</p>
             <div class="story-card-engagement">
               <span>💬 67</span>
+              <span class="chevron">›</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Immigration stories (initially hidden) -->
+        <div class="story-card" data-categories="Immigration" style="display: none;">
+          <div class="story-card-image"></div>
+          <div class="story-card-content">
+            <h3 class="story-card-title">From Seoul to San Francisco</h3>
+            <div class="story-tags">
+              <span class="story-tag">Immigration</span>
+            </div>
+            <p class="story-card-meta">San Francisco • 1975</p>
+            <div class="story-card-engagement">
+              <span>💬 89</span>
+              <span class="chevron">›</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-card" data-categories="Immigration" style="display: none;">
+          <div class="story-card-image"></div>
+          <div class="story-card-content">
+            <h3 class="story-card-title">Ellis Island Memories</h3>
+            <div class="story-tags">
+              <span class="story-tag">Immigration</span>
+              <span class="story-tag">Local History</span>
+            </div>
+            <p class="story-card-meta">New York • 1920</p>
+            <div class="story-card-engagement">
+              <span>💬 156</span>
+              <span class="chevron">›</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Culture/Faith stories (initially hidden) -->
+        <div class="story-card" data-categories="Culture/Faith" style="display: none;">
+          <div class="story-card-image"></div>
+          <div class="story-card-content">
+            <h3 class="story-card-title">Celebrating Diwali Through Generations</h3>
+            <div class="story-tags">
+              <span class="story-tag">Culture/Faith</span>
+              <span class="story-tag">Family</span>
+            </div>
+            <p class="story-card-meta">Los Angeles • 1985-Present</p>
+            <div class="story-card-engagement">
+              <span>💬 95</span>
               <span class="chevron">›</span>
             </div>
           </div>
@@ -371,10 +420,61 @@
   </nav>
 
   <script>
+    function filterStories(category) {
+      const featuredStory = document.querySelector('.featured-story');
+      const allStoryCards = document.querySelectorAll('.story-card');
+
+      if (category === 'All') {
+        // Show featured story
+        featuredStory.style.display = 'block';
+
+        // Show first 3 stories, hide others
+        allStoryCards.forEach((card, index) => {
+          if (index < 3) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      } else {
+        // Check if featured story matches category
+        const featuredCategories = featuredStory.dataset.categories;
+        if (featuredCategories && featuredCategories.includes(category)) {
+          featuredStory.style.display = 'block';
+        } else {
+          featuredStory.style.display = 'none';
+        }
+
+        // Filter story cards
+        let visibleCount = 0;
+        allStoryCards.forEach(card => {
+          const cardCategories = card.dataset.categories;
+          if (cardCategories && cardCategories.includes(category) && visibleCount < 3) {
+            card.style.display = 'flex';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        // If no stories match, show a message
+        if (visibleCount === 0 && featuredStory.style.display === 'none') {
+          console.log('No stories found for category: ' + category);
+        }
+      }
+    }
+
     document.querySelectorAll('.filter-chip').forEach(chip => {
       chip.addEventListener('click', function() {
+        // Update active state
         document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
         this.classList.add('active');
+
+        // Filter stories
+        const category = this.textContent.trim();
+        if (category !== 'More ▼') {
+          filterStories(category);
+        }
       });
     });
   </script>
