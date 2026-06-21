@@ -243,9 +243,20 @@
       </div>
     </div>
 
-    <button class="btn btn-primary btn-full btn-large next-button" onclick="window.location.href='interview.html'">
+    <button class="btn btn-primary btn-full btn-large next-button" onclick="startInterview()">
       Next: Start Interview
     </button>
+
+    <script>
+      // Get mode from URL if available
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get('mode') || sessionStorage.getItem('interviewMode') || 'Life Period';
+
+      function startInterview() {
+        // Pass mode to interview page
+        window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
+      }
+    </script>
   </div>
 </body>
 </html>

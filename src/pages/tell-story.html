@@ -107,7 +107,7 @@
     </div>
 
     <div class="story-modes">
-      <div class="mode-card" onclick="window.location.href='upload.html'">
+      <div class="mode-card" onclick="startInterview('Life Period')">
         <div class="mode-icon">📖</div>
         <div class="mode-content">
           <div class="mode-title">Life Period</div>
@@ -118,7 +118,7 @@
         <div class="mode-arrow">›</div>
       </div>
 
-      <div class="mode-card" onclick="window.location.href='upload.html'">
+      <div class="mode-card" onclick="startInterview('Major Event')">
         <div class="mode-icon">☀️</div>
         <div class="mode-content">
           <div class="mode-title">Major Event</div>
@@ -129,7 +129,7 @@
         <div class="mode-arrow">›</div>
       </div>
 
-      <div class="mode-card" onclick="window.location.href='upload.html'">
+      <div class="mode-card" onclick="startInterview('Journey')">
         <div class="mode-icon">✈️</div>
         <div class="mode-content">
           <div class="mode-title">Journey</div>
@@ -140,7 +140,7 @@
         <div class="mode-arrow">›</div>
       </div>
 
-      <div class="mode-card" onclick="window.location.href='upload.html'">
+      <div class="mode-card" onclick="startInterview('Relationship')">
         <div class="mode-icon">❤️</div>
         <div class="mode-content">
           <div class="mode-title">Relationship</div>
@@ -151,7 +151,7 @@
         <div class="mode-arrow">›</div>
       </div>
 
-      <div class="mode-card" onclick="window.location.href='upload.html'">
+      <div class="mode-card" onclick="startInterview('Wisdom')">
         <div class="mode-icon">👑</div>
         <div class="mode-content">
           <div class="mode-title">Wisdom</div>
@@ -162,6 +162,15 @@
         <div class="mode-arrow">›</div>
       </div>
     </div>
+
+    <script>
+      function startInterview(mode) {
+        // Store mode in sessionStorage
+        sessionStorage.setItem('interviewMode', mode);
+        // Navigate to upload page
+        window.location.href = 'upload.html?mode=' + encodeURIComponent(mode);
+      }
+    </script>
   </div>
 
   <nav class="bottom-nav">

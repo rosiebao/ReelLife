@@ -282,20 +282,135 @@
     </div>
   </div>
 
+  <script src="../js/interview.js"></script>
   <script>
-    let isRecording = true;
-    const recordButton = document.getElementById('recordButton');
+    // Initialize interview client
+    const interviewClient = new window.InterviewClient();
+    let isRecording = false;
+    let startTime = Date.now();
+    let timerInterval = null;
 
+    // Get interview mode from URL or default
+    const urlParams = new URLSearchParams(window.location.search);
+    const interviewMode = urlParams.get('mode') || 'Life Period';
+
+    // Start interview when page loads
+    window.addEventListener('load', async function() {
+      try {
+        // Clear default messages
+        document.querySelector('.chat-container').innerHTML = '';
+
+        // Start interview with Claude
+        await interviewClient.startInterview(interviewMode);
+
+        // Start timer
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+
+        console.log('✅ Interview ready! Claude is connected via AWS Bedrock.');
+      } catch (error) {
+        console.error('Failed to initialize interview:', error);
+        showConnectionError();
+      }
+    });
+
+    // Record button handler
+    const recordButton = document.getElementById('recordButton');
     recordButton.addEventListener('click', function() {
-      isRecording = !isRecording;
+      isRecording = interviewClient.toggleRecording();
+
       if (isRecording) {
         this.textContent = '🎤';
-        document.querySelector('.record-hint').textContent = 'Tap to pause';
+        this.style.background = '#EF4444'; // Red when recording
+        document.querySelector('.record-hint').textContent = 'Recording... tap to pause';
       } else {
         this.textContent = '⏸️';
+        this.style.background = 'var(--color-navy)';
         document.querySelector('.record-hint').textContent = 'Tap to continue';
       }
     });
+
+    // Manual text input (for browsers without speech recognition)
+    let manualInputMode = false;
+    document.querySelector('.control-buttons').addEventListener('click', function(e) {
+      if (e.target.closest('.control-btn')) {
+        const btnText = e.target.textContent;
+        if (btnText.includes('CC')) {
+          manualInputMode = !manualInputMode;
+          if (manualInputMode) {
+            showManualInput();
+          }
+        }
+      }
+    });
+
+    function showManualInput() {
+      const input = prompt('Type your response:');
+      if (input && input.trim()) {
+        interviewClient.addUserMessage(input.trim());
+        interviewClient.sendResponse(input.trim());
+      }
+    }
+
+    // End button handler
+    document.querySelector('.end-button').addEventListener('click', async function() {
+      if (!confirm('Are you sure you want to end this interview?')) {
+        return;
+      }
+
+      try {
+        const result = await interviewClient.endInterview();
+
+        // Clear timer
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
+
+        // Store story in sessionStorage for chapter preview
+        sessionStorage.setItem('interviewStory', result.story);
+        sessionStorage.setItem('interviewTranscript', JSON.stringify(result.transcript));
+
+        // Redirect to chapter preview
+        window.location.href = 'chapter-preview.html';
+      } catch (error) {
+        alert('Failed to end interview. Please try again.');
+      }
+    });
+
+    // Update timer
+    function updateTimer() {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      const timerEl = document.querySelector('.timer');
+      if (timerEl) {
+        timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+    }
+
+    // Show connection error
+    function showConnectionError() {
+      const chatContainer = document.querySelector('.chat-container');
+      chatContainer.innerHTML = `
+        <div class="message error" style="text-align: center; padding: 2rem;">
+          <h3 style="color: #EF4444; margin-bottom: 1rem;">⚠️ Connection Error</h3>
+          <p style="color: var(--color-text-gray); margin-bottom: 1rem;">
+            Unable to connect to the interview API server.
+          </p>
+          <p style="color: var(--color-text-gray); font-size: 0.9rem;">
+            Please make sure:
+          </p>
+          <ul style="text-align: left; max-width: 400px; margin: 1rem auto; color: var(--color-text-gray);">
+            <li>The backend server is running (npm start in /server directory)</li>
+            <li>AWS credentials are configured in config.json</li>
+            <li>You have access to AWS Bedrock with Anthropic Claude</li>
+          </ul>
+          <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top: 1rem;">
+            Retry Connection
+          </button>
+        </div>
+      `;
+    }
   </script>
 </body>
 </html>
