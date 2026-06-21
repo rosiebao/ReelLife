@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Upload your memories">
+  <title>Upload Your Memories - ReelLife</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .upload-page {
+      padding-top: var(--header-height);
+      background: var(--color-white);
+      min-height: 100vh;
+      padding-bottom: 6rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1rem;
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-border-gray);
+    }
+
+    .back-button {
+      color: var(--color-navy);
+      font-size: 1.5rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      margin: 1rem 0 0.5rem;
+    }
+
+    .page-description {
+      font-size: 0.95rem;
+      color: var(--color-text-gray);
+      line-height: 1.6;
+    }
+
+    .upload-options {
+      padding: 1.5rem 1rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .upload-card {
+      background: var(--color-light-bg);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .upload-card:hover {
+      border-color: var(--color-gold);
+      box-shadow: var(--shadow-md);
+    }
+
+    .upload-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--color-white);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #7C3AED;
+    }
+
+    .upload-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-navy);
+    }
+
+    .upload-subtitle {
+      font-size: 0.8rem;
+      color: var(--color-text-gray);
+      text-align: center;
+    }
+
+    .uploads-section {
+      padding: 0 1rem 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .view-all {
+      color: #7C3AED;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .uploads-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .upload-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: linear-gradient(135deg, #D1D5DB 0%, #9CA3AF 100%);
+    }
+
+    .upload-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .upload-duration {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0.5rem;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .next-button {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      z-index: 50;
+    }
+
+    @media (min-width: 768px) {
+      .uploads-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <span class="logo-icon">📖</span>
+      ReelLife
+    </div>
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23E5E7EB'/%3E%3C/svg%3E" alt="Profile" class="profile-avatar">
+  </div>
+
+  <div class="upload-page">
+    <div class="page-header">
+      <button class="back-button" onclick="window.history.back()">‹</button>
+      <h1 class="page-title">Upload Your Memories</h1>
+      <p class="page-description">
+        Add photos, videos, documents, and more.<br>We'll use them to enrich your story.
+      </p>
+    </div>
+
+    <div class="upload-options">
+      <div class="upload-card">
+        <div class="upload-icon">🖼️</div>
+        <div class="upload-title">Photos</div>
+        <div class="upload-subtitle">From gallery</div>
+      </div>
+
+      <div class="upload-card">
+        <div class="upload-icon">🎥</div>
+        <div class="upload-title">Videos</div>
+        <div class="upload-subtitle">Video clips</div>
+      </div>
+
+      <div class="upload-card">
+        <div class="upload-icon">📄</div>
+        <div class="upload-title">Documents</div>
+        <div class="upload-subtitle">PDFs, letters, etc</div>
+      </div>
+
+      <div class="upload-card">
+        <div class="upload-icon">📸</div>
+        <div class="upload-title">Scans</div>
+        <div class="upload-subtitle">Scan or upload</div>
+      </div>
+
+      <div class="upload-card">
+        <div class="upload-icon">🎙️</div>
+        <div class="upload-title">Audio</div>
+        <div class="upload-subtitle">Voice memos, interviews</div>
+      </div>
+
+      <div class="upload-card">
+        <div class="upload-icon">📝</div>
+        <div class="upload-title">Text Notes</div>
+        <div class="upload-subtitle">Add your notes</div>
+      </div>
+    </div>
+
+    <div class="uploads-section">
+      <div class="section-header">
+        <h2 class="section-title">Your Uploads (15)</h2>
+        <span class="view-all">View All ›</span>
+      </div>
+
+      <div class="uploads-grid">
+        <div class="upload-item">
+          <div class="upload-duration">🎥 02:18</div>
+        </div>
+        <div class="upload-item">
+          <div class="upload-duration">🎥 02:15</div>
+        </div>
+        <div class="upload-item">
+          <div class="upload-duration">🎥 01:56</div>
+        </div>
+        <div class="upload-item">
+          <div class="upload-duration">🎥 01:45</div>
+        </div>
+        <div class="upload-item">
+          <div class="upload-duration">📄</div>
+        </div>
+        <div class="upload-item">
+          <div class="upload-duration">📄</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full btn-large next-button" onclick="window.location.href='interview.html'">
+      Next: Start Interview
+    </button>
+  </div>
+</body>
+</html>

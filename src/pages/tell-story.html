@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Choose how to tell your story">
+  <title>Tell Your Story - ReelLife</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .tell-story-page {
+      padding-top: var(--header-height);
+      padding-bottom: calc(var(--bottom-nav-height) + 1rem);
+      background: var(--color-white);
+      min-height: 100vh;
+    }
+
+    .page-header {
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    .page-title {
+      font-size: 1.875rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+      color: var(--color-text-gray);
+      line-height: 1.6;
+    }
+
+    .story-modes {
+      padding: 0 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .mode-card {
+      background: var(--color-white);
+      border: 2px solid var(--color-border-gray);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mode-card:hover {
+      border-color: var(--color-gold);
+      box-shadow: var(--shadow-md);
+    }
+
+    .mode-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFF9F0 0%, #FFF3E0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      flex-shrink: 0;
+    }
+
+    .mode-content {
+      flex: 1;
+    }
+
+    .mode-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--color-navy);
+      margin-bottom: 0.25rem;
+    }
+
+    .mode-description {
+      font-size: 0.9rem;
+      color: var(--color-text-gray);
+      line-height: 1.5;
+    }
+
+    .mode-arrow {
+      font-size: 1.25rem;
+      color: var(--color-text-gray);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <span class="logo-icon">📖</span>
+      ReelLife
+    </div>
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23E5E7EB'/%3E%3C/svg%3E" alt="Profile" class="profile-avatar">
+  </div>
+
+  <div class="tell-story-page">
+    <div class="page-header">
+      <h1 class="page-title">Tell Your Story</h1>
+      <p class="page-subtitle">
+        Choose an interview mode<br>and start sharing your memories.
+      </p>
+    </div>
+
+    <div class="story-modes">
+      <div class="mode-card" onclick="window.location.href='upload.html'">
+        <div class="mode-icon">📖</div>
+        <div class="mode-content">
+          <div class="mode-title">Life Period</div>
+          <div class="mode-description">
+            Share memories from a specific stage of your life.
+          </div>
+        </div>
+        <div class="mode-arrow">›</div>
+      </div>
+
+      <div class="mode-card" onclick="window.location.href='upload.html'">
+        <div class="mode-icon">☀️</div>
+        <div class="mode-content">
+          <div class="mode-title">Major Event</div>
+          <div class="mode-description">
+            Tell the story of an important event or milestone.
+          </div>
+        </div>
+        <div class="mode-arrow">›</div>
+      </div>
+
+      <div class="mode-card" onclick="window.location.href='upload.html'">
+        <div class="mode-icon">✈️</div>
+        <div class="mode-content">
+          <div class="mode-title">Journey</div>
+          <div class="mode-description">
+            Talk about a meaningful journey or experience.
+          </div>
+        </div>
+        <div class="mode-arrow">›</div>
+      </div>
+
+      <div class="mode-card" onclick="window.location.href='upload.html'">
+        <div class="mode-icon">❤️</div>
+        <div class="mode-content">
+          <div class="mode-title">Relationship</div>
+          <div class="mode-description">
+            Share stories about someone who mattered to you.
+          </div>
+        </div>
+        <div class="mode-arrow">›</div>
+      </div>
+
+      <div class="mode-card" onclick="window.location.href='upload.html'">
+        <div class="mode-icon">👑</div>
+        <div class="mode-content">
+          <div class="mode-title">Wisdom</div>
+          <div class="mode-description">
+            Share lessons, values, and advice for future generations.
+          </div>
+        </div>
+        <div class="mode-arrow">›</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="tell-story.html" class="nav-item mic-button active">
+      <span class="nav-icon">🎤</span>
+      <span>Tell Your Story</span>
+    </a>
+    <a href="community.html" class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span>Community</span>
+    </a>
+    <a href="family.html" class="nav-item">
+      <span class="nav-icon">👥</span>
+      <span>Family</span>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <span class="nav-icon">👤</span>
+      <span>Me</span>
+    </a>
+  </nav>
+</body>
+</html>

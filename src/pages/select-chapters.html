@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Select chapters for your book">
+  <title>Select Chapters - ReelLife</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .select-chapters-page {
+      background: var(--color-white);
+      min-height: 100vh;
+      padding: 1rem;
+      padding-bottom: 6rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+      color: var(--color-text-gray);
+      line-height: 1.6;
+    }
+
+    .chapters-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 6rem;
+    }
+
+    .chapter-card {
+      background: var(--color-white);
+      border: 2px solid var(--color-border-gray);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .chapter-card:hover {
+      border-color: var(--color-gold);
+    }
+
+    .chapter-card.selected {
+      border-color: var(--color-navy);
+      background: #F8F9FA;
+    }
+
+    .checkbox {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--color-border-gray);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: var(--color-white);
+      transition: all 0.3s ease;
+    }
+
+    .chapter-card.selected .checkbox {
+      background: var(--color-navy);
+      border-color: var(--color-navy);
+      color: var(--color-white);
+    }
+
+    .chapter-image {
+      width: 70px;
+      height: 70px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      background: linear-gradient(135deg, #D4C5B9 0%, #B8A99A 100%);
+      flex-shrink: 0;
+    }
+
+    .chapter-content {
+      flex: 1;
+    }
+
+    .chapter-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--color-navy);
+      margin-bottom: 0.25rem;
+    }
+
+    .chapter-count {
+      font-size: 0.875rem;
+      color: var(--color-text-gray);
+    }
+
+    .chapter-arrow {
+      color: var(--color-text-gray);
+      font-size: 1.25rem;
+    }
+
+    .next-button {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <div class="select-chapters-page">
+    <div class="page-header">
+      <h1 class="page-title">Select Chapters</h1>
+      <p class="page-subtitle">
+        Choose the chapters you want<br>to include in your book.
+      </p>
+    </div>
+
+    <div class="chapters-list">
+      <div class="chapter-card selected" data-chapter="childhood">
+        <div class="checkbox">✓</div>
+        <div class="chapter-image"></div>
+        <div class="chapter-content">
+          <div class="chapter-title">Childhood Memories</div>
+          <div class="chapter-count">8 chapters</div>
+        </div>
+        <div class="chapter-arrow">›</div>
+      </div>
+
+      <div class="chapter-card selected" data-chapter="education">
+        <div class="checkbox">✓</div>
+        <div class="chapter-image"></div>
+        <div class="chapter-content">
+          <div class="chapter-title">Education & Growth</div>
+          <div class="chapter-count">5 chapters</div>
+        </div>
+        <div class="chapter-arrow">›</div>
+      </div>
+
+      <div class="chapter-card selected" data-chapter="career">
+        <div class="checkbox">✓</div>
+        <div class="chapter-image"></div>
+        <div class="chapter-content">
+          <div class="chapter-title">Career Journey</div>
+          <div class="chapter-count">7 chapters</div>
+        </div>
+        <div class="chapter-arrow">›</div>
+      </div>
+
+      <div class="chapter-card selected" data-chapter="family">
+        <div class="checkbox">✓</div>
+        <div class="chapter-image"></div>
+        <div class="chapter-content">
+          <div class="chapter-title">Love & Family</div>
+          <div class="chapter-count">9 chapters</div>
+        </div>
+        <div class="chapter-arrow">›</div>
+      </div>
+
+      <div class="chapter-card selected" data-chapter="lessons">
+        <div class="checkbox">✓</div>
+        <div class="chapter-image"></div>
+        <div class="chapter-content">
+          <div class="chapter-title">Life Lessons</div>
+          <div class="chapter-count">6 chapters</div>
+        </div>
+        <div class="chapter-arrow">›</div>
+      </div>
+
+      <div class="chapter-card" data-chapter="adventures">
+        <div class="checkbox"></div>
+        <div class="chapter-image"></div>
+        <div class="chapter-content">
+          <div class="chapter-title">Adventures & Travel</div>
+          <div class="chapter-count">4 chapters</div>
+        </div>
+        <div class="chapter-arrow">›</div>
+      </div>
+    </div>
+
+    <button class="btn btn-secondary btn-full btn-large next-button" onclick="window.location.href='book-preview.html'">
+      Next: Choose Style
+    </button>
+  </div>
+
+  <script>
+    document.querySelectorAll('.chapter-card').forEach(card => {
+      card.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        const checkbox = this.querySelector('.checkbox');
+        if (this.classList.contains('selected')) {
+          checkbox.textContent = '✓';
+        } else {
+          checkbox.textContent = '';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

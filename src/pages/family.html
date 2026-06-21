@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View your family tree and stories">
+  <title>Family - ReelLife</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .family-page {
+      padding-top: var(--header-height);
+      padding-bottom: calc(var(--bottom-nav-height) + 1rem);
+      background: var(--color-white);
+    }
+
+    .tab-container {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-border-gray);
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--color-light-bg);
+      color: var(--color-navy);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tab-button.active {
+      background: var(--color-navy);
+      color: var(--color-white);
+    }
+
+    .tab-content {
+      display: none;
+      padding: 1.5rem 1rem;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .family-tree-view {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .tree-layout {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem 1rem;
+    }
+
+    .tree-row {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      width: 100%;
+      position: relative;
+    }
+
+    .family-member {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      max-width: 120px;
+    }
+
+    .member-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+      border: 3px solid var(--color-white);
+      box-shadow: var(--shadow-md);
+    }
+
+    .member-name {
+      font-weight: 600;
+      color: var(--color-navy);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    .member-dates {
+      font-size: 0.8rem;
+      color: var(--color-text-gray);
+      text-align: center;
+    }
+
+    .tree-connector {
+      position: relative;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tree-connector::before {
+      content: '';
+      position: absolute;
+      width: 2px;
+      height: 100%;
+      background: var(--color-border-gray);
+      top: 0;
+    }
+
+    .tree-connector-horizontal {
+      position: absolute;
+      top: 50%;
+      height: 2px;
+      background: var(--color-border-gray);
+      width: 100%;
+    }
+
+    .family-stories-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .family-story-card {
+      display: flex;
+      gap: 1rem;
+      background: var(--color-light-bg);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .family-story-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .story-card-image {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%);
+      flex-shrink: 0;
+    }
+
+    .story-card-content {
+      padding: 1rem;
+      flex: 1;
+    }
+
+    .story-card-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--color-navy);
+      margin-bottom: 0.25rem;
+    }
+
+    .story-card-date {
+      font-size: 0.875rem;
+      color: var(--color-text-gray);
+    }
+
+    .view-all-link {
+      display: block;
+      text-align: center;
+      padding: 1rem;
+      color: var(--color-navy);
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+
+    .timeline-view {
+      padding: 1.5rem 1rem;
+    }
+
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      left: 0.5rem;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--color-border-gray);
+    }
+
+    .timeline-item {
+      position: relative;
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .timeline-marker {
+      position: absolute;
+      left: -1.75rem;
+      top: 1.5rem;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 3px solid var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .timeline-marker.blue { background: #3B82F6; }
+    .timeline-marker.teal { background: #14B8A6; }
+    .timeline-marker.green { background: #10B981; }
+    .timeline-marker.red { background: #EF4444; }
+    .timeline-marker.gold { background: var(--color-gold); }
+
+    .timeline-year {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--color-navy);
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--color-navy);
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-description {
+      font-size: 0.95rem;
+      color: var(--color-text-gray);
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+
+    .timeline-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #B8C5D6 0%, #8FA3BF 100%);
+    }
+
+    .generate-book-btn {
+      position: fixed;
+      bottom: calc(var(--bottom-nav-height) + 1rem);
+      left: 1rem;
+      right: 1rem;
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <span class="logo-icon">📖</span>
+      ReelLife
+    </div>
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23E5E7EB'/%3E%3C/svg%3E" alt="Profile" class="profile-avatar">
+  </div>
+
+  <div class="family-page">
+    <div class="tab-container">
+      <button class="tab-button active" data-tab="tree">Family Tree</button>
+      <button class="tab-button" data-tab="stories">Family Stories</button>
+    </div>
+
+    <div class="tab-content active" id="tree">
+      <div class="tree-layout">
+        <div class="tree-row">
+          <div class="family-member">
+            <div class="member-avatar"></div>
+            <div class="member-name">Grandpa</div>
+            <div class="member-dates">1928 - 2010</div>
+          </div>
+          <div class="family-member">
+            <div class="member-avatar"></div>
+            <div class="member-name">Grandma</div>
+            <div class="member-dates">1931 - 2015</div>
+          </div>
+        </div>
+
+        <div class="tree-connector">
+          <div class="tree-connector-horizontal"></div>
+        </div>
+
+        <div class="tree-row">
+          <div class="family-member">
+            <div class="member-avatar"></div>
+            <div class="member-name">Dad</div>
+            <div class="member-dates">1955 -</div>
+          </div>
+          <div class="family-member">
+            <div class="member-avatar"></div>
+            <div class="member-name">Mom</div>
+            <div class="member-dates">1958 -</div>
+          </div>
+        </div>
+
+        <div class="tree-connector">
+          <div class="tree-connector-horizontal"></div>
+        </div>
+
+        <div class="tree-row">
+          <div class="family-member">
+            <div class="member-avatar"></div>
+            <div class="member-name">Me</div>
+            <div class="member-dates">1990 -</div>
+          </div>
+          <div class="family-member">
+            <div class="member-avatar"></div>
+            <div class="member-name">Sister</div>
+            <div class="member-dates">1992 -</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 0 1rem;">
+        <h3 class="section-title">Family Stories</h3>
+        <div class="family-stories-list">
+          <div class="family-story-card">
+            <div class="story-card-image"></div>
+            <div class="story-card-content">
+              <div class="story-card-title">WWII Memories</div>
+              <div class="story-card-date">1942 - 1945</div>
+            </div>
+          </div>
+
+          <div class="family-story-card">
+            <div class="story-card-image"></div>
+            <div class="story-card-content">
+              <div class="story-card-title">Moving to America</div>
+              <div class="story-card-date">1960</div>
+            </div>
+          </div>
+
+          <div class="family-story-card">
+            <div class="story-card-image"></div>
+            <div class="story-card-content">
+              <div class="story-card-title">Building Our First Home</div>
+              <div class="story-card-date">1962</div>
+            </div>
+          </div>
+
+          <div class="family-story-card">
+            <div class="story-card-image"></div>
+            <div class="story-card-content">
+              <div class="story-card-title">Starting the Family Business</div>
+              <div class="story-card-date">1965</div>
+            </div>
+          </div>
+
+          <div class="family-story-card">
+            <div class="story-card-image"></div>
+            <div class="story-card-content">
+              <div class="story-card-title">A Letter from Vietnam</div>
+              <div class="story-card-date">1968</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="#" class="view-all-link">View All Stories</a>
+      </div>
+    </div>
+
+    <div class="tab-content" id="stories">
+      <div class="timeline-view">
+        <div class="timeline-container">
+          <div class="timeline-item">
+            <div class="timeline-marker blue"></div>
+            <div class="timeline-year">2025 <span style="font-size: 0.875rem; font-weight: 400;">Started ReelLife</span></div>
+            <div class="timeline-description">
+              I decided to start recording my stories for my future family.
+            </div>
+            <div class="timeline-image"></div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker teal"></div>
+            <div class="timeline-year">2022 <span style="font-size: 0.875rem; font-weight: 400;">Moved to Seattle</span></div>
+            <div class="timeline-description">
+              A new chapter begins in a new city full of opportunities.
+            </div>
+            <div class="timeline-image"></div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker green"></div>
+            <div class="timeline-year">2018 <span style="font-size: 0.875rem; font-weight: 400;">Graduated College</span></div>
+            <div class="timeline-description">
+              Proud moment for my family.
+            </div>
+            <div class="timeline-image"></div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker red"></div>
+            <div class="timeline-year">2010 <span style="font-size: 0.875rem; font-weight: 400;">First Day of High School</span></div>
+            <div class="timeline-description">
+              Excited and a little nervous for a new adventure.
+            </div>
+            <div class="timeline-image"></div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker gold"></div>
+            <div class="timeline-year">2005 <span style="font-size: 0.875rem; font-weight: 400;">Family Trip to Korea</span></div>
+            <div class="timeline-description">
+              Memories with my parents and younger sister.
+            </div>
+            <div class="timeline-image"></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full btn-large generate-book-btn">
+          📖 Generate Book
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="tell-story.html" class="nav-item mic-button">
+      <span class="nav-icon">🎤</span>
+      <span>Tell Your Story</span>
+    </a>
+    <a href="community.html" class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span>Community</span>
+    </a>
+    <a href="family.html" class="nav-item active">
+      <span class="nav-icon">👥</span>
+      <span>Family</span>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <span class="nav-icon">👤</span>
+      <span>Me</span>
+    </a>
+  </nav>
+
+  <script>
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        this.classList.add('active');
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    document.querySelector('.generate-book-btn').addEventListener('click', function() {
+      window.location.href = 'select-chapters.html';
+    });
+  </script>
+</body>
+</html>

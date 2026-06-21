@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Preview your chapter">
+  <title>Chapter Preview - ReelLife</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .preview-page {
+      background: var(--color-light-bg);
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .back-button {
+      color: var(--color-navy);
+      font-size: 1.5rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .save-badge {
+      font-size: 0.85rem;
+      color: var(--color-text-gray);
+    }
+
+    .preview-card {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 1.5rem;
+    }
+
+    .preview-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .chapter-image {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      margin: 1.5rem 0;
+      background: linear-gradient(135deg, #A0B4C8 0%, #7A8FA5 100%);
+    }
+
+    .chapter-title {
+      font-size: 1.75rem;
+      font-family: var(--font-serif);
+      margin-bottom: 1rem;
+      color: var(--color-navy);
+    }
+
+    .chapter-meta {
+      font-size: 0.95rem;
+      color: var(--color-text-gray);
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+
+    .chapter-content {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--color-navy);
+      margin-bottom: 1.5rem;
+    }
+
+    .word-count {
+      font-size: 0.875rem;
+      color: var(--color-text-gray);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn-outline-gold {
+      background: transparent;
+      border: 2px solid var(--color-gold);
+      color: var(--color-gold);
+    }
+
+    .btn-outline-gold:hover {
+      background: var(--color-gold);
+      color: var(--color-white);
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-page">
+    <div class="preview-header">
+      <button class="back-button" onclick="window.history.back()">‹</button>
+      <h1 class="preview-title">Chapter Preview</h1>
+      <span class="save-badge">Last saved just now</span>
+    </div>
+
+    <div class="preview-card">
+      <div class="chapter-image"></div>
+
+      <h2 class="chapter-title">The First Step in a New Land</h2>
+
+      <p class="chapter-meta">Seattle • March 1998</p>
+
+      <div class="chapter-content">
+        <p>
+          I arrived in Seattle on a rainy day. I was 18 years old, with one suitcase and $200 in my pocket. Everything was new, everything was big, and I was both excited and scared...
+        </p>
+        <p>
+          The smell of the ocean hit me first as I stepped off the bus. It was different from Guangzhou - colder, sharper. The city stretched out before me, grey buildings reaching toward grey skies, and I remember thinking: this is it. This is where my new life begins.
+        </p>
+        <p>
+          I didn't know anyone. I had an address written on a crumpled piece of paper - a hostel someone had recommended back home. As I walked through the streets, pulling my suitcase behind me, I felt so small. The buildings were tall, the people moved quickly, and everyone spoke English that I could barely understand...
+        </p>
+      </div>
+
+      <p class="word-count">1,285 words</p>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-outline-gold btn-full btn-large">
+        ✨ Edit with AI
+      </button>
+
+      <button class="btn btn-primary btn-full btn-large" onclick="window.location.href='select-chapters.html'">
+        Publish Chapter
+      </button>
+    </div>
+  </div>
+</body>
+</html>

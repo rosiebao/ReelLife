@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sign in to ReelLife">
+  <title>Login - ReelLife</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 450px;
+      background: var(--color-white);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem 2rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .auth-logo-icon {
+      font-size: 2rem;
+    }
+
+    .auth-logo-text {
+      font-family: var(--font-serif);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--color-navy);
+    }
+
+    .auth-title {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-subtitle {
+      color: var(--color-text-gray);
+      font-size: 1rem;
+    }
+
+    .auth-form {
+      margin-bottom: 1.5rem;
+    }
+
+    .forgot-password {
+      text-align: right;
+      margin-top: -0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .forgot-password a {
+      font-size: 0.875rem;
+      color: var(--color-text-gray);
+    }
+
+    .forgot-password a:hover {
+      color: var(--color-gold);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 1.5rem 0;
+      color: var(--color-text-gray);
+      font-size: 0.875rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--color-border-gray);
+    }
+
+    .divider span {
+      padding: 0 1rem;
+    }
+
+    .social-auth {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .social-icon {
+      width: 20px;
+      height: 20px;
+      font-size: 1.25rem;
+    }
+
+    .auth-footer {
+      text-align: center;
+      color: var(--color-text-gray);
+      font-size: 0.95rem;
+    }
+
+    .auth-footer a {
+      color: var(--color-navy);
+      font-weight: 600;
+    }
+
+    .profile-icon {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-light-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-gray);
+      font-size: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-container">
+      <div class="profile-icon">👤</div>
+
+      <div class="auth-header">
+        <div class="auth-logo">
+          <span class="auth-logo-icon">📖</span>
+          <span class="auth-logo-text">ReelLife</span>
+        </div>
+
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Sign in to continue your journey.</p>
+      </div>
+
+      <form class="auth-form" id="loginForm">
+        <div class="form-group">
+          <input
+            type="email"
+            class="form-input"
+            placeholder="Email"
+            required
+            aria-label="Email address"
+          >
+        </div>
+
+        <div class="form-group">
+          <input
+            type="password"
+            class="form-input"
+            placeholder="Password"
+            required
+            aria-label="Password"
+          >
+        </div>
+
+        <div class="forgot-password">
+          <a href="#forgot">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-secondary btn-full btn-large">Sign In</button>
+      </form>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <div class="social-auth">
+        <button type="button" class="btn btn-social btn-large">
+          <span class="social-icon">🍎</span>
+          Continue with Apple
+        </button>
+
+        <button type="button" class="btn btn-social btn-large">
+          <span class="social-icon">G</span>
+          Continue with Google
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="signup.html">Create Account</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      window.location.href = 'community.html';
+    });
+  </script>
+</body>
+</html>
