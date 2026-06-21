@@ -234,6 +234,64 @@
       margin-left: auto;
       color: var(--color-text-gray);
     }
+
+    /* Dropdown Menu */
+    .filter-dropdown {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: var(--color-white);
+      border: 1px solid var(--color-border-gray);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      min-width: 200px;
+      margin-top: 0.5rem;
+      z-index: 1000;
+      display: none;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      border-bottom: 1px solid var(--color-border-gray);
+      font-size: 0.875rem;
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+      background: var(--color-light-bg);
+    }
+
+    /* Image styles */
+    .featured-story-image,
+    .story-card-image {
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* No results message */
+    .no-results {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--color-text-gray);
+    }
+
+    .no-results-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -260,19 +318,28 @@
       </div>
 
       <div class="filters">
-        <button class="filter-chip active">All</button>
-        <button class="filter-chip">Local History</button>
-        <button class="filter-chip">Immigration</button>
-        <button class="filter-chip">Culture/Faith</button>
-        <button class="filter-chip">More ▼</button>
+        <button class="filter-chip active" data-filter="All">All</button>
+        <button class="filter-chip" data-filter="Local History">Local History</button>
+        <button class="filter-chip" data-filter="Immigration">Immigration</button>
+        <button class="filter-chip" data-filter="Culture/Faith">Culture/Faith</button>
+        <div class="filter-dropdown">
+          <button class="filter-chip" id="moreBtn">More ▼</button>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-item" data-filter="Family">Family Stories</div>
+            <div class="dropdown-item" data-filter="Business">Business & Career</div>
+            <div class="dropdown-item" data-filter="Travel">Travel & Adventure</div>
+            <div class="dropdown-item" data-filter="War">War & Conflict</div>
+            <div class="dropdown-item" data-filter="Education">Education</div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="community-content">
       <h2 class="section-title">Featured Story</h2>
 
-      <div class="featured-story" data-categories="Immigration,Local History">
-        <div class="featured-story-image"></div>
+      <div class="featured-story" data-categories="Immigration,Local History" data-title="Leaving Guangzhou at 18">
+        <div class="featured-story-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.5)), linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
         <div class="featured-story-content">
           <h3 class="featured-story-title">Leaving Guangzhou at 18</h3>
 
@@ -299,9 +366,15 @@
 
       <h2 class="section-title">Recent Stories</h2>
 
+      <div class="no-results" id="noResults" style="display: none;">
+        <div class="no-results-icon">📭</div>
+        <p><strong>No stories found</strong></p>
+        <p>Try a different filter or search term</p>
+      </div>
+
       <div class="recent-stories">
-        <div class="story-card" data-categories="Local History">
-          <div class="story-card-image"></div>
+        <div class="story-card" data-categories="Local History" data-title="Working the Fields in California">
+          <div class="story-card-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
           <div class="story-card-content">
             <h3 class="story-card-title">Working the Fields in California</h3>
             <div class="story-tags">
@@ -316,8 +389,8 @@
           </div>
         </div>
 
-        <div class="story-card" data-categories="Business">
-          <div class="story-card-image"></div>
+        <div class="story-card" data-categories="Business" data-title="Opening the Corner Store">
+          <div class="story-card-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
           <div class="story-card-content">
             <h3 class="story-card-title">Opening the Corner Store</h3>
             <div class="story-tags">
@@ -332,8 +405,8 @@
           </div>
         </div>
 
-        <div class="story-card" data-categories="Culture/Faith">
-          <div class="story-card-image"></div>
+        <div class="story-card" data-categories="Culture/Faith" data-title="My Grandmother's Recipes">
+          <div class="story-card-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
           <div class="story-card-content">
             <h3 class="story-card-title">My Grandmother's Recipes</h3>
             <div class="story-tags">
@@ -349,8 +422,8 @@
         </div>
 
         <!-- Immigration stories (initially hidden) -->
-        <div class="story-card" data-categories="Immigration" style="display: none;">
-          <div class="story-card-image"></div>
+        <div class="story-card" data-categories="Immigration" data-title="From Seoul to San Francisco" style="display: none;">
+          <div class="story-card-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), linear-gradient(135deg, #30cfd0 0%, #330867 100%);"></div>
           <div class="story-card-content">
             <h3 class="story-card-title">From Seoul to San Francisco</h3>
             <div class="story-tags">
@@ -364,8 +437,8 @@
           </div>
         </div>
 
-        <div class="story-card" data-categories="Immigration" style="display: none;">
-          <div class="story-card-image"></div>
+        <div class="story-card" data-categories="Immigration" data-title="Ellis Island Memories" style="display: none;">
+          <div class="story-card-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
           <div class="story-card-content">
             <h3 class="story-card-title">Ellis Island Memories</h3>
             <div class="story-tags">
@@ -381,8 +454,8 @@
         </div>
 
         <!-- Culture/Faith stories (initially hidden) -->
-        <div class="story-card" data-categories="Culture/Faith" style="display: none;">
-          <div class="story-card-image"></div>
+        <div class="story-card" data-categories="Culture/Faith" data-title="Celebrating Diwali Through Generations" style="display: none;">
+          <div class="story-card-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);"></div>
           <div class="story-card-content">
             <h3 class="story-card-title">Celebrating Diwali Through Generations</h3>
             <div class="story-tags">
@@ -420,62 +493,109 @@
   </nav>
 
   <script>
-    function filterStories(category) {
+    let currentFilter = 'All';
+    let currentSearch = '';
+
+    function applyFilters() {
       const featuredStory = document.querySelector('.featured-story');
       const allStoryCards = document.querySelectorAll('.story-card');
+      const noResults = document.getElementById('noResults');
+      let visibleCount = 0;
 
-      if (category === 'All') {
-        // Show featured story
+      // Handle featured story
+      const featuredCategories = featuredStory.dataset.categories || '';
+      const featuredTitle = featuredStory.dataset.title || '';
+      const featuredMatch = (currentFilter === 'All' || featuredCategories.includes(currentFilter)) &&
+                            (currentSearch === '' || featuredTitle.toLowerCase().includes(currentSearch.toLowerCase()));
+
+      if (featuredMatch) {
         featuredStory.style.display = 'block';
-
-        // Show first 3 stories, hide others
-        allStoryCards.forEach((card, index) => {
-          if (index < 3) {
-            card.style.display = 'flex';
-          } else {
-            card.style.display = 'none';
-          }
-        });
+        visibleCount++;
       } else {
-        // Check if featured story matches category
-        const featuredCategories = featuredStory.dataset.categories;
-        if (featuredCategories && featuredCategories.includes(category)) {
-          featuredStory.style.display = 'block';
+        featuredStory.style.display = 'none';
+      }
+
+      // Handle story cards
+      let cardVisibleCount = 0;
+      allStoryCards.forEach(card => {
+        const cardCategories = card.dataset.categories || '';
+        const cardTitle = card.dataset.title || '';
+        const categoryMatch = currentFilter === 'All' || cardCategories.includes(currentFilter);
+        const searchMatch = currentSearch === '' || cardTitle.toLowerCase().includes(currentSearch.toLowerCase());
+
+        if (categoryMatch && searchMatch && cardVisibleCount < 5) {
+          card.style.display = 'flex';
+          cardVisibleCount++;
+          visibleCount++;
         } else {
-          featuredStory.style.display = 'none';
+          card.style.display = 'none';
         }
+      });
 
-        // Filter story cards
-        let visibleCount = 0;
-        allStoryCards.forEach(card => {
-          const cardCategories = card.dataset.categories;
-          if (cardCategories && cardCategories.includes(category) && visibleCount < 3) {
-            card.style.display = 'flex';
-            visibleCount++;
-          } else {
-            card.style.display = 'none';
-          }
-        });
-
-        // If no stories match, show a message
-        if (visibleCount === 0 && featuredStory.style.display === 'none') {
-          console.log('No stories found for category: ' + category);
-        }
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
       }
     }
 
-    document.querySelectorAll('.filter-chip').forEach(chip => {
+    // Filter chips click handler
+    document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
       chip.addEventListener('click', function() {
+        currentFilter = this.dataset.filter;
+
         // Update active state
         document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
         this.classList.add('active');
 
-        // Filter stories
-        const category = this.textContent.trim();
-        if (category !== 'More ▼') {
-          filterStories(category);
-        }
+        // Apply filters
+        applyFilters();
       });
+    });
+
+    // Dropdown menu toggle
+    const moreBtn = document.getElementById('moreBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    moreBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function() {
+      dropdownMenu.classList.remove('show');
+    });
+
+    // Dropdown items click handler
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        currentFilter = this.dataset.filter;
+
+        // Update active state
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        moreBtn.classList.add('active');
+
+        // Apply filters
+        applyFilters();
+
+        // Close dropdown
+        dropdownMenu.classList.remove('show');
+      });
+    });
+
+    // Search input handler
+    const searchInput = document.querySelector('.search-input');
+    searchInput.addEventListener('input', function() {
+      currentSearch = this.value.trim();
+      applyFilters();
+    });
+
+    // Prevent dropdown from closing when clicking inside it
+    dropdownMenu.addEventListener('click', function(e) {
+      e.stopPropagation();
     });
   </script>
 </body>
