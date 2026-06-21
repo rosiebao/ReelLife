@@ -282,7 +282,7 @@
     </div>
   </div>
 
-  <script type="module" src="../js/interview.js"></script>
+  <script src="../js/interview.js"></script>
   <script>
     // Initialize interview client
     const interviewClient = new window.InterviewClient();
@@ -296,16 +296,16 @@
 
     // Start interview when page loads
     window.addEventListener('load', async function() {
+      // Initialize timer immediately (regardless of backend connection)
+      startTime = null;
+      document.querySelector('.timer').textContent = '00:00';
+
       try {
         // Clear default messages
         document.querySelector('.chat-container').innerHTML = '';
 
         // Start interview with Claude
         await interviewClient.startInterview(interviewMode);
-
-        // Initialize timer (but don't start yet)
-        startTime = null;
-        document.querySelector('.timer').textContent = '00:00';
 
         console.log('✅ Interview ready! Claude is connected via AWS Bedrock.');
       } catch (error) {
