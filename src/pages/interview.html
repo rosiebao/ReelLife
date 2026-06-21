@@ -270,11 +270,11 @@
       <p class="record-hint">Tap to pause</p>
 
       <div class="control-buttons">
-        <button class="control-btn">
+        <button class="control-btn" id="captionsBtn">
           <span style="font-size: 1.5rem;">CC</span>
           <span>Captions</span>
         </button>
-        <button class="control-btn">
+        <button class="control-btn" id="moreBtn">
           <span style="font-size: 1.5rem;">⋯</span>
           <span>More</span>
         </button>
@@ -282,12 +282,12 @@
     </div>
   </div>
 
-  <script src="../js/interview.js"></script>
+  <script type="module" src="../js/interview.js"></script>
   <script>
     // Initialize interview client
     const interviewClient = new window.InterviewClient();
     let isRecording = false;
-    let startTime = Date.now();
+    let startTime = null;
     let timerInterval = null;
 
     // Get interview mode from URL or default
@@ -303,9 +303,9 @@
         // Start interview with Claude
         await interviewClient.startInterview(interviewMode);
 
-        // Start timer
-        updateTimer();
-        timerInterval = setInterval(updateTimer, 1000);
+        // Initialize timer (but don't start yet)
+        startTime = null;
+        document.querySelector('.timer').textContent = '00:00';
 
         console.log('✅ Interview ready! Claude is connected via AWS Bedrock.');
       } catch (error) {
@@ -316,10 +316,16 @@
 
     // Record button handler
     const recordButton = document.getElementById('recordButton');
-    recordButton.addEventListener('click', function() {
-      isRecording = interviewClient.toggleRecording();
+    recordButton.addEventListener('click', async function() {
+      isRecording = await interviewClient.toggleRecording();
 
       if (isRecording) {
+        // Start timer on first recording
+        if (!startTime) {
+          startTime = Date.now();
+          timerInterval = setInterval(updateTimer, 1000);
+        }
+
         this.textContent = '🎤';
         this.style.background = '#EF4444'; // Red when recording
         document.querySelector('.record-hint').textContent = 'Recording... tap to pause';
@@ -330,19 +336,41 @@
       }
     });
 
-    // Manual text input (for browsers without speech recognition)
-    let manualInputMode = false;
-    document.querySelector('.control-buttons').addEventListener('click', function(e) {
-      if (e.target.closest('.control-btn')) {
-        const btnText = e.target.textContent;
-        if (btnText.includes('CC')) {
-          manualInputMode = !manualInputMode;
-          if (manualInputMode) {
-            showManualInput();
-          }
-        }
+    // Captions button handler
+    document.getElementById('captionsBtn').addEventListener('click', function() {
+      const enabled = interviewClient.toggleCaptions();
+      if (enabled) {
+        this.style.background = 'rgba(124, 58, 237, 0.1)';
+        this.style.color = '#7C3AED';
+      } else {
+        this.style.background = 'none';
+        this.style.color = 'var(--color-text-gray)';
       }
     });
+
+    // More button handler - show options menu
+    document.getElementById('moreBtn').addEventListener('click', function() {
+      showMoreOptions();
+    });
+
+    function showMoreOptions() {
+      const options = [
+        '💬 Type Response',
+        '🔊 Change Volume',
+        '⚙️ Settings',
+        '❌ Cancel'
+      ];
+
+      const choice = prompt('Choose an option:\n\n' + options.join('\n'));
+
+      if (choice && choice.includes('Type Response')) {
+        showManualInput();
+      } else if (choice && choice.includes('Change Volume')) {
+        alert('Volume control coming soon!');
+      } else if (choice && choice.includes('Settings')) {
+        alert('Settings:\n- Language: English\n- Speech Recognition: Enabled\n- Auto-save: On');
+      }
+    }
 
     function showManualInput() {
       const input = prompt('Type your response:');
@@ -359,6 +387,9 @@
       }
 
       try {
+        // Stop recording and cleanup
+        interviewClient.cleanup();
+
         const result = await interviewClient.endInterview();
 
         // Clear timer
@@ -379,6 +410,8 @@
 
     // Update timer
     function updateTimer() {
+      if (!startTime) return;
+
       const elapsed = Math.floor((Date.now() - startTime) / 1000);
       const minutes = Math.floor(elapsed / 60);
       const seconds = elapsed % 60;
@@ -387,6 +420,14 @@
         timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
       }
     }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+      interviewClient.cleanup();
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    });
 
     // Show connection error
     function showConnectionError() {
