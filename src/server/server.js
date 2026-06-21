@@ -72,9 +72,9 @@ try {
     // Development Mode: Multiple credential sources (priority order)
 
     // 1. Check for bearer token (session token) in environment
-    if (process.env.AWS_SESSION_TOKEN || process.env.AWS_BEDROCK_TOKEN) {
-      console.log('🎫 Using AWS session token from environment variables');
-      const sessionToken = process.env.AWS_SESSION_TOKEN || process.env.AWS_BEDROCK_TOKEN;
+    if (process.env.AWS_BEARER_TOKEN_BEDROCK || process.env.AWS_SESSION_TOKEN) {
+      console.log('🎫 Using AWS bearer token from environment variables');
+      const sessionToken = process.env.AWS_BEARER_TOKEN_BEDROCK || process.env.AWS_SESSION_TOKEN;
       bedrockClient = new BedrockRuntimeClient({
         region: config.aws.region,
         credentials: {

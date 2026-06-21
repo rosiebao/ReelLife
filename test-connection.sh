@@ -27,8 +27,8 @@ if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
     echo "  export AWS_SECRET_ACCESS_KEY=\"...\""
     echo "  export AWS_REGION=\"us-east-1\""
     echo ""
-    echo "Optional (for session token):"
-    echo "  export AWS_SESSION_TOKEN=\"...\""
+    echo "Optional (for bearer token):"
+    echo "  export AWS_BEARER_TOKEN_BEDROCK=\"...\""
     echo ""
     echo "Then run this script again: ./test-connection.sh"
     exit 1

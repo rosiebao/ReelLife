@@ -40,6 +40,7 @@ async function validateEnvironment() {
   ];
 
   const optional = [
+    'AWS_BEARER_TOKEN_BEDROCK',
     'AWS_SESSION_TOKEN',
     'ANTHROPIC_MODEL_ID',
   ];
@@ -73,8 +74,8 @@ async function validateEnvironment() {
     log('  export AWS_ACCESS_KEY_ID="your-access-key"', 'yellow');
     log('  export AWS_SECRET_ACCESS_KEY="your-secret-key"', 'yellow');
     log('  export AWS_REGION="us-east-1"', 'yellow');
-    log('\nOptional:', 'yellow');
-    log('  export AWS_SESSION_TOKEN="your-session-token"', 'yellow');
+    log('\nOptional (Bearer Token):', 'yellow');
+    log('  export AWS_BEARER_TOKEN_BEDROCK="your-bearer-token"', 'yellow');
     log('  export ANTHROPIC_MODEL_ID="anthropic.claude-3-5-sonnet-20241022-v2:0"', 'yellow');
     process.exit(1);
   }
@@ -82,7 +83,7 @@ async function validateEnvironment() {
   return {
     region: process.env.AWS_REGION,
     modelId: process.env.ANTHROPIC_MODEL_ID || 'anthropic.claude-3-5-sonnet-20241022-v2:0',
-    hasSessionToken: !!process.env.AWS_SESSION_TOKEN,
+    hasSessionToken: !!(process.env.AWS_BEARER_TOKEN_BEDROCK || process.env.AWS_SESSION_TOKEN),
   };
 }
 
@@ -99,13 +100,14 @@ async function testConnection(config) {
     log('Initializing Bedrock client...', 'yellow');
 
     // Create client with credentials from environment
+    const sessionToken = process.env.AWS_BEARER_TOKEN_BEDROCK || process.env.AWS_SESSION_TOKEN;
     const client = new BedrockRuntimeClient({
       region: config.region,
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        ...(process.env.AWS_SESSION_TOKEN && {
-          sessionToken: process.env.AWS_SESSION_TOKEN,
+        ...(sessionToken && {
+          sessionToken: sessionToken,
         }),
       },
     });
