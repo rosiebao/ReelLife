@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
+import { fromEnv, fromIni } from '@aws-sdk/credential-providers';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -9,9 +10,42 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Determine environment mode
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const IS_PRODUCTION = NODE_ENV === 'production';
+
+console.log(`🌍 Environment: ${NODE_ENV}`);
+console.log(`📦 Mode: ${IS_PRODUCTION ? 'Production (IAM Role)' : 'Development (config.json)'}`);
+
 // Load configuration
+let config;
 const configPath = path.join(__dirname, '../config.json');
-const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+
+if (fs.existsSync(configPath)) {
+  config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+  console.log('✅ Loaded config.json');
+} else {
+  // Default config for production
+  config = {
+    aws: {
+      region: process.env.AWS_REGION || 'us-east-1',
+    },
+    anthropic: {
+      modelId: process.env.ANTHROPIC_MODEL_ID || 'anthropic.claude-3-5-sonnet-20241022-v2:0',
+      maxTokens: parseInt(process.env.MAX_TOKENS) || 2048,
+      temperature: parseFloat(process.env.TEMPERATURE) || 0.7,
+      topP: parseFloat(process.env.TOP_P) || 0.9,
+    },
+    server: {
+      port: parseInt(process.env.PORT) || 3000,
+      cors: {
+        origin: process.env.CORS_ORIGIN || 'http://localhost:8000',
+        credentials: true,
+      },
+    },
+  };
+  console.log('⚙️  Using environment variables');
+}
 
 // Initialize Express app
 const app = express();
@@ -22,21 +56,71 @@ app.use(cors(config.server.cors));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Initialize AWS Bedrock client
-const bedrockClient = new BedrockRuntimeClient({
-  region: config.aws.region,
-  credentials: {
-    accessKeyId: config.aws.credentials.accessKeyId,
-    secretAccessKey: config.aws.credentials.secretAccessKey,
-  },
-});
+// Initialize AWS Bedrock client with appropriate credentials
+let bedrockClient;
+
+try {
+  if (IS_PRODUCTION) {
+    // Production Mode: Use IAM Role (EC2 instance profile, ECS task role, etc.)
+    console.log('🔐 Using IAM Role credentials (production mode)');
+    bedrockClient = new BedrockRuntimeClient({
+      region: config.aws.region,
+      // Credentials automatically loaded from IAM role
+      // Works with: EC2 instance profiles, ECS task roles, Lambda execution roles
+    });
+  } else {
+    // Development Mode: Use credentials from config.json or environment variables
+    if (config.aws.credentials && config.aws.credentials.accessKeyId) {
+      console.log('🔑 Using credentials from config.json (development mode)');
+      bedrockClient = new BedrockRuntimeClient({
+        region: config.aws.region,
+        credentials: {
+          accessKeyId: config.aws.credentials.accessKeyId,
+          secretAccessKey: config.aws.credentials.secretAccessKey,
+        },
+      });
+    } else if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+      console.log('🔑 Using credentials from environment variables');
+      bedrockClient = new BedrockRuntimeClient({
+        region: config.aws.region,
+        credentials: fromEnv(),
+      });
+    } else {
+      console.log('🔑 Using default credential chain (AWS CLI, ~/.aws/credentials)');
+      bedrockClient = new BedrockRuntimeClient({
+        region: config.aws.region,
+        credentials: fromIni(),
+      });
+    }
+  }
+  console.log('✅ AWS Bedrock client initialized');
+} catch (error) {
+  console.error('❌ Failed to initialize Bedrock client:', error.message);
+  process.exit(1);
+}
 
 // Store active interview sessions (in production, use a database)
 const interviewSessions = new Map();
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'ReelLife API is running' });
+  res.json({
+    status: 'ok',
+    message: 'ReelLife API is running',
+    mode: IS_PRODUCTION ? 'production' : 'development',
+    environment: NODE_ENV,
+  });
+});
+
+// Environment info endpoint
+app.get('/api/info', (req, res) => {
+  res.json({
+    environment: NODE_ENV,
+    mode: IS_PRODUCTION ? 'production (IAM Role)' : 'development (config.json)',
+    region: config.aws.region,
+    model: config.anthropic.modelId,
+    version: '1.0.0',
+  });
 });
 
 // Start a new interview session
@@ -48,11 +132,11 @@ app.post('/api/interview/start', async (req, res) => {
 
     // Create system prompt based on interview mode
     const systemPrompts = {
-      'Life Period': 'You are a compassionate interviewer helping someone document memories from a specific period of their life. Ask thoughtful, open-ended questions that encourage detailed storytelling. Focus on emotions, sensory details, and significant moments.',
-      'Major Event': 'You are conducting an oral history interview about a major life event. Ask questions that help the person explore the before, during, and after of this event, including how it changed them.',
-      'Journey': 'You are interviewing someone about a meaningful journey or experience. Ask about their motivations, challenges faced, people encountered, and what they learned along the way.',
-      'Relationship': 'You are helping someone preserve memories of an important relationship. Ask about how they met, memorable moments together, what they learned from this person, and the lasting impact.',
-      'Wisdom': 'You are conducting a legacy interview focused on life lessons and wisdom. Ask about key learnings, advice for future generations, values that guided them, and what they hope others will remember.',
+      'Life Period': 'You are a compassionate interviewer helping someone document memories from a specific period of their life. Ask thoughtful, open-ended questions that encourage detailed storytelling. Focus on emotions, sensory details, and significant moments. Keep questions concise and conversational.',
+      'Major Event': 'You are conducting an oral history interview about a major life event. Ask questions that help the person explore the before, during, and after of this event, including how it changed them. Be empathetic and allow them to share at their own pace.',
+      'Journey': 'You are interviewing someone about a meaningful journey or experience. Ask about their motivations, challenges faced, people encountered, and what they learned along the way. Encourage vivid storytelling with sensory details.',
+      'Relationship': 'You are helping someone preserve memories of an important relationship. Ask about how they met, memorable moments together, what they learned from this person, and the lasting impact. Be warm and encourage emotional honesty.',
+      'Wisdom': 'You are conducting a legacy interview focused on life lessons and wisdom. Ask about key learnings, advice for future generations, values that guided them, and what they hope others will remember. Help them articulate their insights clearly.',
     };
 
     const systemPrompt = systemPrompts[mode] || systemPrompts['Life Period'];
@@ -270,8 +354,16 @@ function calculateDuration(session) {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 ReelLife API server running on http://localhost:${PORT}`);
+  console.log('\n' + '='.repeat(60));
+  console.log('🚀 ReelLife API Server Started');
+  console.log('='.repeat(60));
+  console.log(`📍 URL: http://localhost:${PORT}`);
+  console.log(`🌍 Environment: ${NODE_ENV}`);
+  console.log(`📦 Mode: ${IS_PRODUCTION ? 'Production (IAM Role)' : 'Development (config.json)'}`);
   console.log(`📍 AWS Region: ${config.aws.region}`);
   console.log(`🤖 Model: ${config.anthropic.modelId}`);
-  console.log(`✅ Ready to conduct interviews with Claude!`);
+  console.log(`🔒 Auth: ${IS_PRODUCTION ? 'IAM Role' : 'Static Credentials'}`);
+  console.log('='.repeat(60));
+  console.log('✅ Ready to conduct interviews with Claude!');
+  console.log('='.repeat(60) + '\n');
 });

@@ -88,16 +88,36 @@ Create an IAM user with these permissions:
    node -e "const c = require('../config.json'); console.log('Region:', c.aws.region, '✓')"
    ```
 
+## Deployment Modes
+
+ReelLife supports **two deployment modes**:
+
+| Mode | Credentials | Command | Best For |
+|------|-------------|---------|----------|
+| **Development** | config.json | `npm run dev` | Local development |
+| **Production** | IAM Role | `npm run prod` | AWS deployment (EC2, ECS, Lambda) |
+
+See [DEPLOYMENT_MODES.md](../DEPLOYMENT_MODES.md) for complete guide.
+
 ## Usage
 
 ### Start the Server
 
-**Development mode** (with auto-restart):
+**Development mode** (uses config.json):
 ```bash
 npm run dev
+# or
+./start-dev.sh
 ```
 
-**Production mode**:
+**Production mode** (uses IAM Role):
+```bash
+npm run prod
+# or
+./start-prod.sh
+```
+
+**Quick start** (auto-detects mode):
 ```bash
 npm start
 ```
