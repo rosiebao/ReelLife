@@ -56,7 +56,7 @@ Create an IAM user with these permissions:
 
 1. **Navigate to server directory:**
    ```bash
-   cd /Users/rosie/Work/ReelLife/server
+   cd /Users/rosie/Work/ReelLife/src/server
    ```
 
 2. **Install dependencies:**
@@ -282,7 +282,7 @@ You can use any Anthropic Claude model available in Bedrock:
 
 **Solution:**
 ```bash
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm start
 ```
 
@@ -375,7 +375,7 @@ Story generation adds ~$0.06-0.10 per story.
 For issues:
 1. Check the [AWS Bedrock documentation](https://docs.aws.amazon.com/bedrock/)
 2. Review [Anthropic Claude API docs](https://docs.anthropic.com/)
-3. Check server logs: `tail -f logs/server.log`
+3. Check server logs: `tail -f logs/src/server.log`
 
 ## License
 

@@ -115,7 +115,6 @@ ReelLife/
 │   │   ├── signup.html         # Sign up page
 │   │   ├── community.html      # Community archive
 │   │   ├── family.html         # Family tree & stories
-│   │   ├── timeline.html       # Personal timeline
 │   │   ├── tell-story.html     # Story mode selection
 │   │   ├── upload.html         # Upload memories
 │   │   ├── interview.html      # AI interview
@@ -123,17 +122,23 @@ ReelLife/
 │   │   ├── select-chapters.html # Chapter selection
 │   │   └── book-preview.html   # Final book preview
 │   ├── css/
-│   │   ├── main.css            # Global styles
-│   │   ├── components.css      # Reusable components
-│   │   └── pages.css           # Page-specific styles
+│   │   └── main.css            # Global styles
 │   ├── js/
-│   │   ├── main.js             # Global JavaScript
-│   │   ├── navigation.js       # Navigation handling
-│   │   └── interactions.js     # User interactions
-│   └── images/
-│       └── (placeholder images)
+│   │   └── interview.js        # Interview API client
+│   ├── images/
+│   │   └── (placeholder images)
+│   └── server/                 # Backend API server
+│       ├── server.js           # Express server + AWS Bedrock
+│       ├── package.json        # Node dependencies
+│       ├── start-dev.sh        # Development startup script
+│       ├── start-prod.sh       # Production startup script
+│       └── README.md           # Server documentation
 ├── Resource/                    # Original design files
+├── config.json                 # AWS credentials (not in git)
 ├── DEVELOPMENT.md              # This file
+├── API_SETUP.md                # API setup guide
+├── DEPLOYMENT_MODES.md         # Dev/Prod mode guide
+├── BEARER_TOKEN_GUIDE.md       # Bearer token guide
 └── README.md                   # Project README
 
 ```

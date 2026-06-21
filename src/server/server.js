@@ -19,7 +19,7 @@ console.log(`📦 Mode: ${IS_PRODUCTION ? 'Production (IAM Role)' : 'Development
 
 // Load configuration
 let config;
-const configPath = path.join(__dirname, '../config.json');
+const configPath = path.join(__dirname, '../../config.json');
 
 if (fs.existsSync(configPath)) {
   config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));

@@ -90,7 +90,7 @@ Complete guide to set up the ReelLife interview feature with AWS Bedrock and Ant
 
 ```bash
 # Navigate to server directory
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 
 # Install Node.js packages
 npm install
@@ -159,7 +159,7 @@ PORT=3000
 #### Terminal 1: Backend API Server
 
 ```bash
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm start
 ```
 
@@ -257,7 +257,7 @@ Expected:
 curl http://localhost:3000/health
 
 # If not, start it
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm start
 ```
 
@@ -463,7 +463,7 @@ Before deploying to production:
 - [Express.js Docs](https://expressjs.com/)
 
 **Need Help?**
-- Check server logs: `tail -f logs/server.log`
+- Check server logs: `tail -f logs/src/server.log`
 - Test API with Postman
 - Review network tab in browser DevTools
 

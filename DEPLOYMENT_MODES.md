@@ -55,19 +55,19 @@ The ReelLife API supports two deployment modes with different authentication str
 
 **Option A: npm script**
 ```bash
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm run dev
 ```
 
 **Option B: Bash script**
 ```bash
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 ./start-dev.sh
 ```
 
 **Option C: Manual**
 ```bash
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 NODE_ENV=development node server.js
 ```
 
@@ -345,7 +345,7 @@ ssh ec2-user@your-instance
 
 # 2. Clone repo
 git clone https://github.com/rosiebao/ReelLife.git
-cd ReelLife/server
+cd ReelLife/src/server
 
 # 3. Install dependencies
 npm install
@@ -411,8 +411,8 @@ CMD ["node", "server.js"]
 
 ```javascript
 // lambda-handler.js
-import serverlessExpress from '@vendia/serverless-express';
-import app from './server.js';
+import serverlessExpress from '@vendia/src/serverless-express';
+import app from './src/server.js';
 
 export const handler = serverlessExpress({ app });
 ```

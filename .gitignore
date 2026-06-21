@@ -9,9 +9,15 @@ package-lock.json
 config.json
 config.local.json
 .aws/
+
+# Credential Files (but allow .md documentation)
 *.token
+!*.token.md
 *.credentials
-*bearer*token*
+!*.credentials.md
+*bearer.token
+*bearer-token.txt
+*session-token.txt
 
 # Logs
 logs/

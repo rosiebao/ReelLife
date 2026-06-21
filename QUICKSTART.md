@@ -69,7 +69,7 @@ nano config.json
 
 ```bash
 # Terminal 1: Start Backend
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm install
 npm start
 
@@ -153,7 +153,7 @@ curl -X POST http://localhost:3000/api/interview/start \
 ### "Failed to start interview"
 ```bash
 # Backend not running?
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm start
 ```
 
@@ -189,7 +189,7 @@ npm start
 
 1. ✅ Complete setup above
 2. ✅ Test your first interview
-3. 🎯 Customize interview prompts (`server/server.js`)
+3. 🎯 Customize interview prompts (`server/src/server.js`)
 4. 🎯 Add user authentication
 5. 🎯 Deploy to production
 6. 🎯 Add more interview modes
@@ -200,14 +200,14 @@ npm start
 
 ```bash
 # Start everything
-cd /Users/rosie/Work/ReelLife/server && npm start &
+cd /Users/rosie/Work/ReelLife/src/server && npm start &
 cd /Users/rosie/Work/ReelLife/src && python3 -m http.server 8000
 
 # Test API
 curl http://localhost:3000/health
 
 # View logs
-tail -f server/logs/server.log
+tail -f server/logs/src/server.log
 
 # Stop servers
 # Press Ctrl+C in both terminal windows

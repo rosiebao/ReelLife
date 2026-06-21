@@ -52,7 +52,7 @@ export AWS_SESSION_TOKEN="IQo..."  # The bearer token
 # export AWS_BEDROCK_TOKEN="IQo..."
 
 # Start server
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm run dev
 ```
 
@@ -99,7 +99,7 @@ aws_secret_access_key = ...
 aws_session_token = IQo...
 
 # Server will automatically use these
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm run dev
 ```
 
@@ -214,7 +214,7 @@ export AWS_SESSION_TOKEN="IQo..."
 echo $AWS_SESSION_TOKEN
 
 # 4. Start ReelLife server
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm run dev
 
 # 5. You should see:
@@ -244,7 +244,7 @@ echo "Access Key: $AWS_ACCESS_KEY_ID"
 echo "Expires: $(echo $CREDS | jq -r '.Credentials.Expiration')"
 
 # Start server
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm run dev
 ```
 
@@ -401,7 +401,7 @@ aws bedrock list-foundation-models --region us-east-1
 
 ```bash
 # Start server
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm run dev
 
 # Look for this line:
@@ -513,7 +513,7 @@ export AWS_SECRET_ACCESS_KEY="..."
 export AWS_SESSION_TOKEN="IQo..."
 
 # Start server
-cd /Users/rosie/Work/ReelLife/server
+cd /Users/rosie/Work/ReelLife/src/server
 npm run dev
 
 # Expected output:

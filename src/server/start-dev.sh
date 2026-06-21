@@ -7,7 +7,7 @@ echo "🔧 Starting ReelLife API in DEVELOPMENT mode..."
 echo ""
 
 # Check if config.json exists
-if [ ! -f "../config.json" ]; then
+if [ ! -f "../../config.json" ]; then
     echo "❌ Error: config.json not found!"
     echo "Please create config.json with your AWS credentials."
     echo "See config.json.example for template."
