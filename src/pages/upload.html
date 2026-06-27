@@ -252,10 +252,10 @@
 
     <div class="uploads-section" id="uploadsSection" style="text-align: center; padding: 2rem 1rem;">
       <p style="font-size: 1rem; color: var(--color-text-gray); margin-bottom: 0.5rem;">
-        💡 <strong>Tip:</strong> Select one or more categories above
+        💡 <strong>Tip:</strong> Select one category above (optional)
       </p>
       <p style="font-size: 0.875rem; color: var(--color-text-gray);">
-        You'll be able to upload files after clicking "Next: Start Interview"
+        Choose <strong>Audio</strong> to record your story by speaking, or select another option to upload files
       </p>
     </div>
 
@@ -268,8 +268,8 @@
       const urlParams = new URLSearchParams(window.location.search);
       const mode = urlParams.get('mode') || sessionStorage.getItem('interviewMode') || 'Life Period';
 
-      // Track selected categories (just visual selection, no file upload yet)
-      let selectedCategories = [];
+      // Track selected category (only one at a time)
+      let selectedCategory = null;
 
       // Add click handlers to upload cards - just for visual selection
       document.querySelectorAll('.upload-card').forEach(card => {
@@ -279,65 +279,69 @@
           if (this.classList.contains('selected')) {
             // Deselect
             this.classList.remove('selected');
-            selectedCategories = selectedCategories.filter(t => t !== type);
+            selectedCategory = null;
           } else {
-            // Select
+            // Deselect all others first
+            document.querySelectorAll('.upload-card').forEach(c => c.classList.remove('selected'));
+
+            // Select this one
             this.classList.add('selected');
-            if (!selectedCategories.includes(type)) {
-              selectedCategories.push(type);
-            }
+            selectedCategory = type;
           }
         });
       });
 
       function startInterview() {
-        // If user selected categories, trigger file selection
-        if (selectedCategories.length > 0) {
-          // Map of category types to their file inputs and accept types
-          const fileInputMap = {
-            'photos': { input: 'photosInput', accept: 'image/*' },
-            'videos': { input: 'videosInput', accept: 'video/*' },
-            'documents': { input: 'documentsInput', accept: '.pdf,.doc,.docx,.txt' },
-            'scans': { input: 'scansInput', accept: 'image/*' },
-            'audio': { input: 'audioInput', accept: 'audio/*' },
-            'text': { input: null, accept: null }
-          };
+        // If user selected a category, handle accordingly
+        if (selectedCategory) {
+          // Audio goes directly to interview page with recording
+          if (selectedCategory === 'audio') {
+            sessionStorage.setItem('interviewMethod', 'audio');
+            window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
+            return;
+          }
 
-          // Trigger file selection for the first selected category
-          const firstCategory = selectedCategories[0];
-
-          if (firstCategory === 'text') {
-            // Handle text notes with prompt
+          // Text notes - show prompt then go to interview
+          if (selectedCategory === 'text') {
             const note = prompt('Enter your text note:');
             if (note && note.trim()) {
               sessionStorage.setItem('interviewNote', note.trim());
-              sessionStorage.setItem('interviewCategories', JSON.stringify(selectedCategories));
+              sessionStorage.setItem('interviewMethod', 'text');
               window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
             }
-          } else {
-            // Trigger file picker for selected type
-            const inputInfo = fileInputMap[firstCategory];
-            if (inputInfo && inputInfo.input) {
-              const fileInput = document.getElementById(inputInfo.input);
+            return;
+          }
 
-              // Store what was selected
-              sessionStorage.setItem('interviewCategories', JSON.stringify(selectedCategories));
+          // For other types (photos, videos, documents, scans), trigger file picker
+          const fileInputMap = {
+            'photos': 'photosInput',
+            'videos': 'videosInput',
+            'documents': 'documentsInput',
+            'scans': 'scansInput'
+          };
 
-              // Set up handler for when files are selected
-              fileInput.onchange = function(e) {
-                if (e.target.files.length > 0) {
-                  // Files selected, proceed to interview
-                  sessionStorage.setItem('interviewFilesCount', e.target.files.length);
-                  window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
-                }
-              };
+          const inputId = fileInputMap[selectedCategory];
+          if (inputId) {
+            const fileInput = document.getElementById(inputId);
 
-              // Trigger file selection
-              fileInput.click();
-            }
+            // Store what was selected
+            sessionStorage.setItem('interviewMethod', selectedCategory);
+
+            // Set up handler for when files are selected
+            fileInput.onchange = function(e) {
+              if (e.target.files.length > 0) {
+                // Files selected, proceed to interview
+                sessionStorage.setItem('interviewFilesCount', e.target.files.length);
+                window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
+              }
+            };
+
+            // Trigger file selection
+            fileInput.click();
           }
         } else {
-          // No categories selected, skip uploads and go directly to interview
+          // No category selected, skip uploads and go directly to interview with audio recording
+          sessionStorage.setItem('interviewMethod', 'audio');
           window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
         }
       }
