@@ -195,6 +195,17 @@ a:hover {
   align-items: center;
   padding: 0.5rem 0;
   z-index: 100;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .bottom-nav {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 600px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 .nav-item {
@@ -228,13 +239,14 @@ a:hover {
 }
 
 .nav-item.mic-button .nav-icon {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   background: var(--color-gold);
   border-radius: 50%;
   color: var(--color-white);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   box-shadow: var(--shadow-md);
+  margin-top: -8px;
 }
 
 /* ============================================
@@ -419,10 +431,6 @@ a:hover {
 
   .container {
     padding: 0 var(--spacing-md);
-  }
-
-  .bottom-nav {
-    display: none;
   }
 
   .page-with-nav {
