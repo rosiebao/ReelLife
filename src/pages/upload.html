@@ -206,62 +206,57 @@
     </div>
 
     <div class="upload-options">
-      <label class="upload-card" data-type="photos">
-        <input type="file" accept="image/*" multiple id="photosInput">
+      <div class="upload-card" data-type="photos">
         <div class="upload-icon">🖼️</div>
         <div class="upload-title">Photos</div>
         <div class="upload-subtitle">From gallery</div>
-      </label>
+      </div>
 
-      <label class="upload-card" data-type="videos">
-        <input type="file" accept="video/*" multiple id="videosInput">
+      <div class="upload-card" data-type="videos">
         <div class="upload-icon">🎥</div>
         <div class="upload-title">Videos</div>
         <div class="upload-subtitle">Video clips</div>
-      </label>
+      </div>
 
-      <label class="upload-card" data-type="documents">
-        <input type="file" accept=".pdf,.doc,.docx,.txt" multiple id="documentsInput">
+      <div class="upload-card" data-type="documents">
         <div class="upload-icon">📄</div>
         <div class="upload-title">Documents</div>
         <div class="upload-subtitle">PDFs, letters, etc</div>
-      </label>
+      </div>
 
-      <label class="upload-card" data-type="scans">
-        <input type="file" accept="image/*" capture="environment" multiple id="scansInput">
+      <div class="upload-card" data-type="scans">
         <div class="upload-icon">📸</div>
         <div class="upload-title">Scans</div>
         <div class="upload-subtitle">Scan or upload</div>
-      </label>
+      </div>
 
-      <label class="upload-card" data-type="audio">
-        <input type="file" accept="audio/*" multiple id="audioInput">
+      <div class="upload-card" data-type="audio">
         <div class="upload-icon">🎙️</div>
         <div class="upload-title">Audio</div>
         <div class="upload-subtitle">Voice memos, interviews</div>
-      </label>
+      </div>
 
-      <div class="upload-card" data-type="text" id="textNotesCard">
+      <div class="upload-card" data-type="text">
         <div class="upload-icon">📝</div>
         <div class="upload-title">Text Notes</div>
         <div class="upload-subtitle">Add your notes</div>
       </div>
     </div>
 
-    <div class="uploads-section" id="uploadsSection">
-      <div class="section-header">
-        <h2 class="section-title">Your Uploads (<span id="uploadCount">0</span>)</h2>
-        <span class="view-all" id="viewAllBtn" style="display: none;">View All ›</span>
-      </div>
+    <!-- Hidden file inputs -->
+    <input type="file" accept="image/*" multiple id="photosInput" style="display: none;">
+    <input type="file" accept="video/*" multiple id="videosInput" style="display: none;">
+    <input type="file" accept=".pdf,.doc,.docx,.txt" multiple id="documentsInput" style="display: none;">
+    <input type="file" accept="image/*" capture="environment" multiple id="scansInput" style="display: none;">
+    <input type="file" accept="audio/*" multiple id="audioInput" style="display: none;">
 
-      <div class="uploads-grid" id="uploadsGrid">
-        <!-- Uploads will appear here dynamically -->
-      </div>
-
-      <div id="noUploadsMessage" style="text-align: center; padding: 2rem; color: var(--color-text-gray);">
-        <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">📁 No uploads yet</p>
-        <p style="font-size: 0.95rem;">Select a category above to add your memories</p>
-      </div>
+    <div class="uploads-section" id="uploadsSection" style="text-align: center; padding: 2rem 1rem;">
+      <p style="font-size: 1rem; color: var(--color-text-gray); margin-bottom: 0.5rem;">
+        💡 <strong>Tip:</strong> Select one or more categories above
+      </p>
+      <p style="font-size: 0.875rem; color: var(--color-text-gray);">
+        You'll be able to upload files after clicking "Next: Start Interview"
+      </p>
     </div>
 
     <button class="btn btn-primary btn-full btn-large next-button" onclick="startInterview()">
@@ -273,135 +268,79 @@
       const urlParams = new URLSearchParams(window.location.search);
       const mode = urlParams.get('mode') || sessionStorage.getItem('interviewMode') || 'Life Period';
 
-      // Store uploads
-      let uploads = [];
+      // Track selected categories (just visual selection, no file upload yet)
+      let selectedCategories = [];
 
-      // Handle file uploads for each type
-      document.getElementById('photosInput').addEventListener('change', function(e) {
-        handleFileUpload(e.target.files, 'photos', '🖼️');
-        this.closest('.upload-card').classList.add('selected');
-      });
+      // Add click handlers to upload cards - just for visual selection
+      document.querySelectorAll('.upload-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const type = this.dataset.type;
 
-      document.getElementById('videosInput').addEventListener('change', function(e) {
-        handleFileUpload(e.target.files, 'videos', '🎥');
-        this.closest('.upload-card').classList.add('selected');
-      });
-
-      document.getElementById('documentsInput').addEventListener('change', function(e) {
-        handleFileUpload(e.target.files, 'documents', '📄');
-        this.closest('.upload-card').classList.add('selected');
-      });
-
-      document.getElementById('scansInput').addEventListener('change', function(e) {
-        handleFileUpload(e.target.files, 'scans', '📸');
-        this.closest('.upload-card').classList.add('selected');
-      });
-
-      document.getElementById('audioInput').addEventListener('change', function(e) {
-        handleFileUpload(e.target.files, 'audio', '🎙️');
-        this.closest('.upload-card').classList.add('selected');
-      });
-
-      // Handle text notes
-      document.getElementById('textNotesCard').addEventListener('click', function() {
-        const note = prompt('Enter your text note:');
-        if (note && note.trim()) {
-          uploads.push({
-            type: 'text',
-            icon: '📝',
-            name: 'Text Note',
-            content: note.trim(),
-            timestamp: Date.now()
-          });
-          this.classList.add('selected');
-          updateUploadsDisplay();
-        }
-      });
-
-      function handleFileUpload(files, type, icon) {
-        for (let file of files) {
-          uploads.push({
-            type: type,
-            icon: icon,
-            name: file.name,
-            size: file.size,
-            file: file,
-            timestamp: Date.now()
-          });
-        }
-        updateUploadsDisplay();
-      }
-
-      function updateUploadsDisplay() {
-        const uploadsGrid = document.getElementById('uploadsGrid');
-        const uploadCount = document.getElementById('uploadCount');
-        const noUploadsMessage = document.getElementById('noUploadsMessage');
-        const viewAllBtn = document.getElementById('viewAllBtn');
-
-        uploadCount.textContent = uploads.length;
-
-        if (uploads.length === 0) {
-          uploadsGrid.innerHTML = '';
-          noUploadsMessage.style.display = 'block';
-          viewAllBtn.style.display = 'none';
-        } else {
-          noUploadsMessage.style.display = 'none';
-          if (uploads.length > 6) {
-            viewAllBtn.style.display = 'block';
+          if (this.classList.contains('selected')) {
+            // Deselect
+            this.classList.remove('selected');
+            selectedCategories = selectedCategories.filter(t => t !== type);
+          } else {
+            // Select
+            this.classList.add('selected');
+            if (!selectedCategories.includes(type)) {
+              selectedCategories.push(type);
+            }
           }
-
-          // Show latest 6 uploads
-          const displayUploads = uploads.slice(-6).reverse();
-          uploadsGrid.innerHTML = displayUploads.map((upload, index) => {
-            let label = upload.icon;
-
-            // Add duration/size info for certain types
-            if (upload.type === 'videos' || upload.type === 'audio') {
-              label += ' ' + formatFileSize(upload.size);
-            }
-
-            // Create thumbnail URL for images
-            let thumbnail = '';
-            if ((upload.type === 'photos' || upload.type === 'scans') && upload.file) {
-              thumbnail = `background-image: url('${URL.createObjectURL(upload.file)}');`;
-            } else {
-              // Use gradient for non-image uploads
-              const gradients = [
-                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                'linear-gradient(135deg, #30cfd0 0%, #330867 100%)'
-              ];
-              thumbnail = `background: ${gradients[index % gradients.length]};`;
-            }
-
-            return `
-              <div class="upload-item" style="${thumbnail}">
-                <div class="upload-duration">${label}</div>
-              </div>
-            `;
-          }).join('');
-        }
-      }
-
-      function formatFileSize(bytes) {
-        if (bytes < 1024) return bytes + 'B';
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB';
-        return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
-      }
+        });
+      });
 
       function startInterview() {
-        // Store uploads in sessionStorage
-        sessionStorage.setItem('interviewUploads', JSON.stringify(uploads.length));
+        // If user selected categories, trigger file selection
+        if (selectedCategories.length > 0) {
+          // Map of category types to their file inputs and accept types
+          const fileInputMap = {
+            'photos': { input: 'photosInput', accept: 'image/*' },
+            'videos': { input: 'videosInput', accept: 'video/*' },
+            'documents': { input: 'documentsInput', accept: '.pdf,.doc,.docx,.txt' },
+            'scans': { input: 'scansInput', accept: 'image/*' },
+            'audio': { input: 'audioInput', accept: 'audio/*' },
+            'text': { input: null, accept: null }
+          };
 
-        // Pass mode to interview page
-        window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
+          // Trigger file selection for the first selected category
+          const firstCategory = selectedCategories[0];
+
+          if (firstCategory === 'text') {
+            // Handle text notes with prompt
+            const note = prompt('Enter your text note:');
+            if (note && note.trim()) {
+              sessionStorage.setItem('interviewNote', note.trim());
+              sessionStorage.setItem('interviewCategories', JSON.stringify(selectedCategories));
+              window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
+            }
+          } else {
+            // Trigger file picker for selected type
+            const inputInfo = fileInputMap[firstCategory];
+            if (inputInfo && inputInfo.input) {
+              const fileInput = document.getElementById(inputInfo.input);
+
+              // Store what was selected
+              sessionStorage.setItem('interviewCategories', JSON.stringify(selectedCategories));
+
+              // Set up handler for when files are selected
+              fileInput.onchange = function(e) {
+                if (e.target.files.length > 0) {
+                  // Files selected, proceed to interview
+                  sessionStorage.setItem('interviewFilesCount', e.target.files.length);
+                  window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
+                }
+              };
+
+              // Trigger file selection
+              fileInput.click();
+            }
+          }
+        } else {
+          // No categories selected, skip uploads and go directly to interview
+          window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
+        }
       }
-
-      // Initialize display
-      updateUploadsDisplay();
     </script>
   </div>
 </body>
