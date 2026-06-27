@@ -57,11 +57,39 @@
       cursor: pointer;
       transition: all 0.3s ease;
       border: 2px solid transparent;
+      position: relative;
     }
 
     .upload-card:hover {
       border-color: var(--color-gold);
       box-shadow: var(--shadow-md);
+    }
+
+    .upload-card.selected {
+      border-color: var(--color-gold);
+      background: #FFF9F0;
+      box-shadow: var(--shadow-md);
+    }
+
+    .upload-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 24px;
+      height: 24px;
+      background: var(--color-gold);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: bold;
+    }
+
+    .upload-card input[type="file"] {
+      display: none;
     }
 
     .upload-icon {
@@ -178,68 +206,61 @@
     </div>
 
     <div class="upload-options">
-      <div class="upload-card">
+      <label class="upload-card" data-type="photos">
+        <input type="file" accept="image/*" multiple id="photosInput">
         <div class="upload-icon">🖼️</div>
         <div class="upload-title">Photos</div>
         <div class="upload-subtitle">From gallery</div>
-      </div>
+      </label>
 
-      <div class="upload-card">
+      <label class="upload-card" data-type="videos">
+        <input type="file" accept="video/*" multiple id="videosInput">
         <div class="upload-icon">🎥</div>
         <div class="upload-title">Videos</div>
         <div class="upload-subtitle">Video clips</div>
-      </div>
+      </label>
 
-      <div class="upload-card">
+      <label class="upload-card" data-type="documents">
+        <input type="file" accept=".pdf,.doc,.docx,.txt" multiple id="documentsInput">
         <div class="upload-icon">📄</div>
         <div class="upload-title">Documents</div>
         <div class="upload-subtitle">PDFs, letters, etc</div>
-      </div>
+      </label>
 
-      <div class="upload-card">
+      <label class="upload-card" data-type="scans">
+        <input type="file" accept="image/*" capture="environment" multiple id="scansInput">
         <div class="upload-icon">📸</div>
         <div class="upload-title">Scans</div>
         <div class="upload-subtitle">Scan or upload</div>
-      </div>
+      </label>
 
-      <div class="upload-card">
+      <label class="upload-card" data-type="audio">
+        <input type="file" accept="audio/*" multiple id="audioInput">
         <div class="upload-icon">🎙️</div>
         <div class="upload-title">Audio</div>
         <div class="upload-subtitle">Voice memos, interviews</div>
-      </div>
+      </label>
 
-      <div class="upload-card">
+      <div class="upload-card" data-type="text" id="textNotesCard">
         <div class="upload-icon">📝</div>
         <div class="upload-title">Text Notes</div>
         <div class="upload-subtitle">Add your notes</div>
       </div>
     </div>
 
-    <div class="uploads-section">
+    <div class="uploads-section" id="uploadsSection">
       <div class="section-header">
-        <h2 class="section-title">Your Uploads (15)</h2>
-        <span class="view-all">View All ›</span>
+        <h2 class="section-title">Your Uploads (<span id="uploadCount">0</span>)</h2>
+        <span class="view-all" id="viewAllBtn" style="display: none;">View All ›</span>
       </div>
 
-      <div class="uploads-grid">
-        <div class="upload-item">
-          <div class="upload-duration">🎥 02:18</div>
-        </div>
-        <div class="upload-item">
-          <div class="upload-duration">🎥 02:15</div>
-        </div>
-        <div class="upload-item">
-          <div class="upload-duration">🎥 01:56</div>
-        </div>
-        <div class="upload-item">
-          <div class="upload-duration">🎥 01:45</div>
-        </div>
-        <div class="upload-item">
-          <div class="upload-duration">📄</div>
-        </div>
-        <div class="upload-item">
-          <div class="upload-duration">📄</div>
-        </div>
+      <div class="uploads-grid" id="uploadsGrid">
+        <!-- Uploads will appear here dynamically -->
+      </div>
+
+      <div id="noUploadsMessage" style="text-align: center; padding: 2rem; color: var(--color-text-gray);">
+        <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">📁 No uploads yet</p>
+        <p style="font-size: 0.95rem;">Select a category above to add your memories</p>
       </div>
     </div>
 
@@ -252,10 +273,135 @@
       const urlParams = new URLSearchParams(window.location.search);
       const mode = urlParams.get('mode') || sessionStorage.getItem('interviewMode') || 'Life Period';
 
+      // Store uploads
+      let uploads = [];
+
+      // Handle file uploads for each type
+      document.getElementById('photosInput').addEventListener('change', function(e) {
+        handleFileUpload(e.target.files, 'photos', '🖼️');
+        this.closest('.upload-card').classList.add('selected');
+      });
+
+      document.getElementById('videosInput').addEventListener('change', function(e) {
+        handleFileUpload(e.target.files, 'videos', '🎥');
+        this.closest('.upload-card').classList.add('selected');
+      });
+
+      document.getElementById('documentsInput').addEventListener('change', function(e) {
+        handleFileUpload(e.target.files, 'documents', '📄');
+        this.closest('.upload-card').classList.add('selected');
+      });
+
+      document.getElementById('scansInput').addEventListener('change', function(e) {
+        handleFileUpload(e.target.files, 'scans', '📸');
+        this.closest('.upload-card').classList.add('selected');
+      });
+
+      document.getElementById('audioInput').addEventListener('change', function(e) {
+        handleFileUpload(e.target.files, 'audio', '🎙️');
+        this.closest('.upload-card').classList.add('selected');
+      });
+
+      // Handle text notes
+      document.getElementById('textNotesCard').addEventListener('click', function() {
+        const note = prompt('Enter your text note:');
+        if (note && note.trim()) {
+          uploads.push({
+            type: 'text',
+            icon: '📝',
+            name: 'Text Note',
+            content: note.trim(),
+            timestamp: Date.now()
+          });
+          this.classList.add('selected');
+          updateUploadsDisplay();
+        }
+      });
+
+      function handleFileUpload(files, type, icon) {
+        for (let file of files) {
+          uploads.push({
+            type: type,
+            icon: icon,
+            name: file.name,
+            size: file.size,
+            file: file,
+            timestamp: Date.now()
+          });
+        }
+        updateUploadsDisplay();
+      }
+
+      function updateUploadsDisplay() {
+        const uploadsGrid = document.getElementById('uploadsGrid');
+        const uploadCount = document.getElementById('uploadCount');
+        const noUploadsMessage = document.getElementById('noUploadsMessage');
+        const viewAllBtn = document.getElementById('viewAllBtn');
+
+        uploadCount.textContent = uploads.length;
+
+        if (uploads.length === 0) {
+          uploadsGrid.innerHTML = '';
+          noUploadsMessage.style.display = 'block';
+          viewAllBtn.style.display = 'none';
+        } else {
+          noUploadsMessage.style.display = 'none';
+          if (uploads.length > 6) {
+            viewAllBtn.style.display = 'block';
+          }
+
+          // Show latest 6 uploads
+          const displayUploads = uploads.slice(-6).reverse();
+          uploadsGrid.innerHTML = displayUploads.map((upload, index) => {
+            let label = upload.icon;
+
+            // Add duration/size info for certain types
+            if (upload.type === 'videos' || upload.type === 'audio') {
+              label += ' ' + formatFileSize(upload.size);
+            }
+
+            // Create thumbnail URL for images
+            let thumbnail = '';
+            if ((upload.type === 'photos' || upload.type === 'scans') && upload.file) {
+              thumbnail = `background-image: url('${URL.createObjectURL(upload.file)}');`;
+            } else {
+              // Use gradient for non-image uploads
+              const gradients = [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                'linear-gradient(135deg, #30cfd0 0%, #330867 100%)'
+              ];
+              thumbnail = `background: ${gradients[index % gradients.length]};`;
+            }
+
+            return `
+              <div class="upload-item" style="${thumbnail}">
+                <div class="upload-duration">${label}</div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + 'B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
+      }
+
       function startInterview() {
+        // Store uploads in sessionStorage
+        sessionStorage.setItem('interviewUploads', JSON.stringify(uploads.length));
+
         // Pass mode to interview page
         window.location.href = 'interview.html?mode=' + encodeURIComponent(mode);
       }
+
+      // Initialize display
+      updateUploadsDisplay();
     </script>
   </div>
 </body>
