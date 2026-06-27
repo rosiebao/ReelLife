@@ -208,6 +208,62 @@
       font-size: 0.75rem;
     }
 
+    /* Chat input interface (for non-audio modes) */
+    .chat-input-container {
+      padding: 1rem;
+      border-top: 1px solid var(--color-border-gray);
+      background: var(--color-white);
+      display: none;
+    }
+
+    .chat-input-container.show {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--color-border-gray);
+      border-radius: var(--radius-lg);
+      font-size: 1rem;
+      font-family: var(--font-sans);
+      resize: none;
+      max-height: 120px;
+      min-height: 48px;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--color-gold);
+    }
+
+    .send-button {
+      width: 48px;
+      height: 48px;
+      background: var(--color-gold);
+      color: var(--color-white);
+      border: none;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .send-button:active {
+      transform: scale(0.95);
+    }
+
+    .send-button:disabled {
+      background: var(--color-border-gray);
+      cursor: not-allowed;
+    }
+
     /* More options modal */
     .more-modal {
       position: fixed;
@@ -349,7 +405,8 @@
       </div>
     </div>
 
-    <div class="interview-controls">
+    <!-- Audio recording controls (for audio mode) -->
+    <div class="interview-controls" id="audioControls">
       <button class="record-button" id="recordButton">
         🎤
       </button>
@@ -365,6 +422,12 @@
           <span>More</span>
         </button>
       </div>
+    </div>
+
+    <!-- Chat input controls (for text/file upload modes) -->
+    <div class="chat-input-container" id="chatInputContainer">
+      <textarea class="chat-input" id="chatInput" placeholder="Type your response..." rows="1"></textarea>
+      <button class="send-button" id="sendButton" disabled>➤</button>
     </div>
   </div>
 
@@ -407,6 +470,19 @@
     const urlParams = new URLSearchParams(window.location.search);
     const interviewMode = urlParams.get('mode') || 'Life Period';
 
+    // Check interview method (audio, text, photos, videos, etc.)
+    const interviewMethod = sessionStorage.getItem('interviewMethod') || 'audio';
+    const isAudioMode = interviewMethod === 'audio';
+
+    // Show appropriate interface based on method
+    if (isAudioMode) {
+      document.getElementById('audioControls').style.display = 'flex';
+      document.getElementById('chatInputContainer').classList.remove('show');
+    } else {
+      document.getElementById('audioControls').style.display = 'none';
+      document.getElementById('chatInputContainer').classList.add('show');
+    }
+
     // Start interview when page loads
     window.addEventListener('load', async function() {
       // Initialize timer immediately (regardless of backend connection)
@@ -420,12 +496,37 @@
         // Start interview with Claude
         await interviewClient.startInterview(interviewMode);
 
+        // If non-audio mode, show context message
+        if (!isAudioMode) {
+          showMethodContext();
+        }
+
         console.log('✅ Interview ready! Claude is connected via AWS Bedrock.');
       } catch (error) {
         console.error('Failed to initialize interview:', error);
         showConnectionError();
       }
     });
+
+    // Show context about the interview method
+    function showMethodContext() {
+      const methodMessages = {
+        'photos': '📸 I see you\'ve selected photos. I\'ll ask you questions about them.',
+        'videos': '🎥 I see you\'ve selected videos. I\'ll help you capture the stories behind them.',
+        'documents': '📄 I see you\'ve selected documents. Let\'s discuss what they mean to you.',
+        'scans': '📸 I see you\'ve selected scans. Let\'s explore the memories they contain.',
+        'text': '📝 I see you\'ve added notes. Let\'s expand on your story together.'
+      };
+
+      const message = methodMessages[interviewMethod] || '💬 Let\'s have a conversation about your story.';
+
+      // Add system message
+      const chatContainer = document.querySelector('.chat-container');
+      const systemMsg = document.createElement('div');
+      systemMsg.style.cssText = 'text-align: center; padding: 1rem; color: var(--color-text-gray); font-size: 0.9rem;';
+      systemMsg.textContent = message;
+      chatContainer.insertBefore(systemMsg, chatContainer.firstChild);
+    }
 
     // Record button handler
     const recordButton = document.getElementById('recordButton');
@@ -561,6 +662,53 @@
       if (timerEl) {
         timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
       }
+    }
+
+    // Chat input handlers (for non-audio modes)
+    const chatInput = document.getElementById('chatInput');
+    const sendButton = document.getElementById('sendButton');
+
+    // Auto-resize textarea
+    chatInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+
+      // Enable/disable send button
+      sendButton.disabled = !this.value.trim();
+    });
+
+    // Send on Enter (Shift+Enter for new line)
+    chatInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (this.value.trim()) {
+          sendChatMessage();
+        }
+      }
+    });
+
+    // Send button click
+    sendButton.addEventListener('click', sendChatMessage);
+
+    function sendChatMessage() {
+      const message = chatInput.value.trim();
+      if (!message) return;
+
+      // Start timer on first message if not started
+      if (!startTime) {
+        startTime = Date.now() - (elapsedTime * 1000);
+        timerInterval = setInterval(updateTimer, 1000);
+      }
+
+      // Send message
+      interviewClient.addUserMessage(message);
+      interviewClient.sendResponse(message);
+
+      // Clear input
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      sendButton.disabled = true;
+      chatInput.focus();
     }
 
     // Cleanup on page unload
