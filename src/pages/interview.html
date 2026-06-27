@@ -207,6 +207,92 @@
     .control-btn span {
       font-size: 0.75rem;
     }
+
+    /* More options modal */
+    .more-modal {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-white);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+      padding: 1.5rem;
+      z-index: 200;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .more-modal.show {
+      transform: translateY(0);
+    }
+
+    .more-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 199;
+      display: none;
+    }
+
+    .more-modal-overlay.show {
+      display: block;
+    }
+
+    .more-modal-header {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: var(--color-navy);
+    }
+
+    .more-option-btn {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      background: var(--color-light-bg);
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      color: var(--color-navy);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .more-option-btn:hover {
+      border-color: var(--color-gold);
+      background: #FFF9F0;
+    }
+
+    .more-option-btn .icon {
+      font-size: 1.5rem;
+    }
+
+    .more-option-btn .label {
+      flex: 1;
+      text-align: left;
+      font-weight: 500;
+    }
+
+    .more-cancel-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--color-white);
+      border: 2px solid var(--color-border-gray);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      color: var(--color-text-gray);
+      cursor: pointer;
+      font-weight: 500;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -280,6 +366,31 @@
         </button>
       </div>
     </div>
+  </div>
+
+  <!-- More options modal -->
+  <div class="more-modal-overlay" id="moreModalOverlay"></div>
+  <div class="more-modal" id="moreModal">
+    <div class="more-modal-header">Options</div>
+
+    <button class="more-option-btn" id="typeResponseBtn">
+      <span class="icon">💬</span>
+      <span class="label">Type Response</span>
+    </button>
+
+    <button class="more-option-btn" id="skipQuestionBtn">
+      <span class="icon">⏭️</span>
+      <span class="label">Skip Question</span>
+    </button>
+
+    <button class="more-option-btn" id="settingsBtn">
+      <span class="icon">⚙️</span>
+      <span class="label">Settings</span>
+    </button>
+
+    <button class="more-cancel-btn" id="cancelMoreBtn">
+      Cancel
+    </button>
   </div>
 
   <script src="../js/interview.js"></script>
@@ -363,29 +474,45 @@
       }
     });
 
-    // More button handler - show options menu
+    // More button handler - show options modal
     document.getElementById('moreBtn').addEventListener('click', function() {
-      showMoreOptions();
+      showMoreModal();
     });
 
-    function showMoreOptions() {
-      const options = [
-        '💬 Type Response',
-        '🔊 Change Volume',
-        '⚙️ Settings',
-        '❌ Cancel'
-      ];
-
-      const choice = prompt('Choose an option:\n\n' + options.join('\n'));
-
-      if (choice && choice.includes('Type Response')) {
-        showManualInput();
-      } else if (choice && choice.includes('Change Volume')) {
-        alert('Volume control coming soon!');
-      } else if (choice && choice.includes('Settings')) {
-        alert('Settings:\n- Language: English\n- Speech Recognition: Enabled\n- Auto-save: On');
-      }
+    function showMoreModal() {
+      document.getElementById('moreModal').classList.add('show');
+      document.getElementById('moreModalOverlay').classList.add('show');
     }
+
+    function hideMoreModal() {
+      document.getElementById('moreModal').classList.remove('show');
+      document.getElementById('moreModalOverlay').classList.remove('show');
+    }
+
+    // Modal overlay click - close modal
+    document.getElementById('moreModalOverlay').addEventListener('click', hideMoreModal);
+
+    // Cancel button
+    document.getElementById('cancelMoreBtn').addEventListener('click', hideMoreModal);
+
+    // Type Response button
+    document.getElementById('typeResponseBtn').addEventListener('click', function() {
+      hideMoreModal();
+      showManualInput();
+    });
+
+    // Skip Question button
+    document.getElementById('skipQuestionBtn').addEventListener('click', function() {
+      hideMoreModal();
+      interviewClient.addUserMessage('[Skipped]');
+      interviewClient.sendResponse('I would prefer to skip this question and move to the next one.');
+    });
+
+    // Settings button
+    document.getElementById('settingsBtn').addEventListener('click', function() {
+      hideMoreModal();
+      alert('Settings:\n- Language: English\n- Speech Recognition: Enabled\n- Auto-save: On');
+    });
 
     function showManualInput() {
       const input = prompt('Type your response:');
